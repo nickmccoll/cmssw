@@ -10,13 +10,13 @@ float StripCPEfromTrackAngle::stripErrorSquared(const unsigned N, const float uP
   else
     switch(loc){
     case SiStripDetId::TEC :
-      uerr = TEC_P0+uProj*TEC_P1; break;
+      uerr = TEC_P0+float(N)*TEC_P1; break;
     case SiStripDetId::TID :
-      uerr = TID_P0+uProj*TID_P1; break;
+      uerr = TID_P0+float(N)*TID_P1; break;
     case SiStripDetId::TOB :
-      uerr = TOB_P0+uProj*TOB_P1; break;
+      uerr = TOB_P0+float(N)*TOB_P1; break;
     case SiStripDetId::TIB :
-      uerr = TIB_P0+uProj*TIB_P1; break;
+      uerr = TIB_P0+float(N)*TIB_P1; break;
     default:
       throw cms::Exception("StripCPEfromTrackAngle::stripErrorSquared", "Incompatible sub-detector.");
       break;

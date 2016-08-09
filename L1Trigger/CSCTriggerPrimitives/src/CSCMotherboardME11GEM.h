@@ -165,7 +165,22 @@ class CSCMotherboardME11GEM : public CSCMotherboard
                             enum ME11Part = ME1B, bool isCopad = false, bool first = true);  
   GEMPadsBX matchingGEMPads(const CSCCLCTDigi& cLCT, const CSCALCTDigi& aLCT, const GEMPadsBX& pads = GEMPadsBX(), 
                             enum ME11Part = ME1B, bool isCopad = false, bool first = true);  
-  
+  /*
+  GEMPadsBX matchingGEMPads(const CSCCLCTDigi& cLCT, const GEMPadsBX& pads = GEMPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMPadsBX matchingGEMPads(const CSCALCTDigi& aLCT, const GEMPadsBX& pads = GEMPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMPadsBX matchingGEMPads(const CSCCLCTDigi& cLCT, const CSCALCTDigi& aLCT, const GEMPadsBX& pads = GEMPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  */
+
+  GEMCoPadsBX matchingGEMCoPads(const CSCCLCTDigi& cLCT, const GEMCoPadsBX& pads = GEMCoPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMCoPadsBX matchingGEMCoPads(const CSCALCTDigi& aLCT, const GEMCoPadsBX& pads = GEMCoPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMCoPadsBX matchingGEMCoPads(const CSCCLCTDigi& cLCT, const CSCALCTDigi& aLCT, const GEMCoPadsBX& pads = GEMCoPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+
   std::vector<CSCALCTDigi> alctV;
   std::vector<CSCCLCTDigi> clctV1b;
   std::vector<CSCCLCTDigi> clctV1a;

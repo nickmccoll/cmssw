@@ -26,6 +26,10 @@ class CSCMotherboardME21GEM : public CSCMotherboard
   typedef std::vector<GEMPadBX> GEMPadsBX;
   typedef std::map<int, GEMPadsBX> GEMPads;
 
+  typedef std::pair<unsigned int, const GEMCoPadDigi> GEMCoPadBX;
+  typedef std::vector<GEMCoPadBX> GEMCoPadsBX;
+  typedef std::map<int, GEMCoPadsBX> GEMCoPads;
+
  public:
   /** Normal constructor. */
   CSCMotherboardME21GEM(unsigned endcap, unsigned station, unsigned sector, 

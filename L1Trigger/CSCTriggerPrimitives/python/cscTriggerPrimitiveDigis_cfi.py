@@ -370,7 +370,7 @@ me11tmbSLHCGEM = cms.PSet(
     useOldLCTDataFormat = cms.bool(True),
 
     ## copad construction
-    maxDeltaBXInCoPad = cms.int32(1),
+    maxDeltaBXInCoPad = cms.int32(0),
     maxDeltaPadInCoPad = cms.int32(1),
 
     ## matching to pads in case LowQ CLCT
@@ -433,7 +433,7 @@ me21tmbSLHCGEM = cms.PSet(
     useOldLCTDataFormat = cms.bool(True),
 
     ## copad construction
-    maxDeltaBXInCoPad = cms.int32(1),
+    maxDeltaBXInCoPad = cms.int32(0),
     maxDeltaPadInCoPad = cms.int32(2),
 
     ## matching to pads in case LowQ CLCT

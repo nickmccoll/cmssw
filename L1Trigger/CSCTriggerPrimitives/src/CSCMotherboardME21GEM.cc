@@ -736,7 +736,7 @@ CSCCorrelatedLCTDigi CSCMotherboardME21GEM::constructLCTsGEM(const CSCALCTDigi& 
     
     // LCT quality number - set it to a very high value 
     // hack to get LCTs in the CSCTF
-    unsigned int quality = promoteALCTGEMquality_ ? 14 : 11;
+    unsigned int quality = promoteALCTGEMquality_ ? 15 : 11;
 
     // Bunch crossing
     int bx = alct.getBX();

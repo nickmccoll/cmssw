@@ -1688,7 +1688,7 @@ CSCCorrelatedLCTDigi CSCMotherboardME11GEM::constructLCTsGEM(const CSCCLCTDigi& 
     
     // LCT quality number -  dummy quality
     const bool promoteCLCTGEMquality(ME == ME1A ? promoteCLCTGEMquality_ME1a_:promoteCLCTGEMquality_ME1b_);
-    unsigned int quality = promoteCLCTGEMquality ? 14 : 11;
+    unsigned int quality = promoteCLCTGEMquality ? 15 : 11;
     
     // Bunch crossing: get it from cathode LCT if anode LCT is not there.
     int bx = gem.bx() + lct_central_bx;;

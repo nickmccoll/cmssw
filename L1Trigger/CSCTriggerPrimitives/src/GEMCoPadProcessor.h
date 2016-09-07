@@ -59,7 +59,6 @@ class GEMCoPadProcessor
   const int theRing;
   const int theChamber;
 
-  int maxDeltaRoll_;
   int maxDeltaPadGE11_;
   int maxDeltaPadGE21_;
   int maxDeltaBX_;

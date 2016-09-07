@@ -26,7 +26,6 @@ GEMCoPadProcessor::GEMCoPadProcessor(unsigned endcap,
   // Verbosity level, set to 0 (no print) by default.
   infoV        = conf.getParameter<int>("verbosity");
 
-  maxDeltaRoll_ = copad.getParameter<int>("maxDeltaRoll");
   maxDeltaPadGE11_ = copad.getParameter<int>("maxDeltaPadGE11");
   maxDeltaPadGE21_ = copad.getParameter<int>("maxDeltaPadGE21");
   maxDeltaBX_ = copad.getParameter<int>("maxDeltaBX");

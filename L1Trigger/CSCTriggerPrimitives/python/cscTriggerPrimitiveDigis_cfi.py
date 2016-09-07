@@ -343,7 +343,6 @@ cscTriggerPrimitiveDigis = cms.EDProducer("CSCTriggerPrimitivesProducer",
 # ==================================================
 
 copadParam = cms.PSet(
-    maxDeltaRoll = cms.uint32(0),
     maxDeltaPadGE11 = cms.uint32(5),
     maxDeltaPadGE21 = cms.uint32(5),
     maxDeltaBX = cms.uint32(0)

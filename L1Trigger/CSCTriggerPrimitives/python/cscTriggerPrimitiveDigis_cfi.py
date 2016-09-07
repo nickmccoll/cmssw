@@ -343,9 +343,10 @@ cscTriggerPrimitiveDigis = cms.EDProducer("CSCTriggerPrimitivesProducer",
 # ==================================================
 
 copadParam = cms.PSet(
-    maxDeltaPadGE11 = cms.uint32(5),
-    maxDeltaPadGE21 = cms.uint32(5),
-    maxDeltaBX = cms.uint32(0)
+    verbosity = cms.int32(0),
+    maxDeltaPadGE11 = cms.int32(5),
+    maxDeltaPadGE21 = cms.int32(5),
+    maxDeltaBX = cms.int32(0)
 )
 
 # to be used by ME11 chambers with GEM-CSC ILT

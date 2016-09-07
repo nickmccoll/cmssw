@@ -71,7 +71,7 @@ CSCMotherboardME21GEM::CSCMotherboardME21GEM(unsigned endcap, unsigned station,
   
   const edm::ParameterSet me21tmbParams(conf.getParameter<edm::ParameterSet>("me21tmbSLHCGEM"));
   const edm::ParameterSet coPadParams(conf.getParameter<edm::ParameterSet>("copadParam"));
-  coPadProcessor.reset( new GEMCoPadProcessor(endcap, station, 1, chamber, commonParams, coPadParams) );
+  coPadProcessor.reset( new GEMCoPadProcessor(endcap, station, 1, chamber, coPadParams) );
 
   // whether to not reuse CLCTs that were used by previous matching ALCTs
   // in ALCT-to-CLCT algorithm

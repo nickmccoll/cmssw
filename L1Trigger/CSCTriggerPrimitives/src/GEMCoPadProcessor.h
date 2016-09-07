@@ -20,7 +20,6 @@ class GEMCoPadProcessor
   /** Normal constructor. */
   GEMCoPadProcessor(unsigned endcap, unsigned station, unsigned ring,
 		    unsigned chamber,
-		    const edm::ParameterSet& conf,
 		    const edm::ParameterSet& copad);
   
   /** Default constructor. Used for testing. */

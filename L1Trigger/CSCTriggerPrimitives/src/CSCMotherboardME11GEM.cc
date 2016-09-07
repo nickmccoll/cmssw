@@ -204,7 +204,7 @@ CSCMotherboardME11GEM::CSCMotherboardME11GEM(unsigned endcap, unsigned station,
 
   clct1a.reset( new CSCCathodeLCTProcessor(endcap, station, sector, subsector, chamber, clctParams, commonParams, me11tmbParams) );
   clct1a->setRing(4);
-  coPadProcessor.reset( new GEMCoPadProcessor(endcap, station, 1, chamber, commonParams, coPadParams) );
+  coPadProcessor.reset( new GEMCoPadProcessor(endcap, station, 1, chamber, coPadParams) );
   
 
   match_earliest_alct_me11_only = me11tmbParams.getParameter<bool>("matchEarliestAlctME11Only");

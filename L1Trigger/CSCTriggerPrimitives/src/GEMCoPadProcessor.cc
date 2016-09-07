@@ -14,13 +14,12 @@ GEMCoPadProcessor::GEMCoPadProcessor(unsigned endcap,
 				     unsigned station,
 				     unsigned ring,
 				     unsigned chamber,
-				     const edm::ParameterSet& conf,
 				     const edm::ParameterSet& copad) :
   theEndcap(endcap), theStation(station), theRing(ring),
   theChamber(chamber) {
   
   // Verbosity level, set to 0 (no print) by default.
-  infoV        = conf.getParameter<int>("verbosity");
+  infoV        = copad.getParameter<int>("verbosity");
   maxDeltaPadGE11_ = copad.getParameter<int>("maxDeltaPadGE11");
   maxDeltaPadGE21_ = copad.getParameter<int>("maxDeltaPadGE21");
   maxDeltaBX_ = copad.getParameter<int>("maxDeltaBX");

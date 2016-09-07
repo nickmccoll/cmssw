@@ -89,7 +89,32 @@ GEMCoPadProcessor::run(const GEMPadDigiCollection* in_pads)
 }
 
 std::vector<GEMCoPadDigi> 
+GEMCoPadProcessor::run(const GEMPadDigiClusterCollection* in_clusters)
+{
+  std::unique_ptr<GEMPadDigiCollection> out_pads(new GEMPadDigiCollection());
+  declusterize(in_clusters, *out_pads);
+  return run(out_pads.get());
+}
+
+
+std::vector<GEMCoPadDigi>
 GEMCoPadProcessor::readoutCoPads()
 {
   return gemCoPadV;
+}
+
+void
+GEMCoPadProcessor::declusterize(const GEMPadDigiClusterCollection* in_clusters,
+				GEMPadDigiCollection& out_pads)
+{
+  GEMPadDigiClusterCollection::DigiRangeIterator detUnitIt;
+  for (detUnitIt = in_clusters->begin();detUnitIt != in_clusters->end(); ++detUnitIt) {
+    const GEMDetId& id = (*detUnitIt).first;
+    const GEMPadDigiClusterCollection::Range& range = (*detUnitIt).second;
+    for (GEMPadDigiClusterCollection::const_iterator digiIt = range.first; digiIt!=range.second; ++digiIt) {
+      for (auto p: digiIt->pads()){
+	out_pads.insertDigi(id, GEMPadDigi(p, digiIt->bx()));
+      }
+    }
+  }
 }

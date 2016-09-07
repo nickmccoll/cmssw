@@ -44,6 +44,9 @@ class GEMCoPadProcessor
   std::vector<GEMCoPadDigi> readoutCoPads();
 
  private:
+  // declusterizes the clusters into single pad digis
+  void declusterize(const GEMPadDigiClusterCollection*, GEMPadDigiCollection&);
+
   /** Verbosity level: 0: no print (default).
    *                   1: print only CoPads found.
    *                   2: info at every step of the algorithm.
@@ -63,11 +66,6 @@ class GEMCoPadProcessor
 
   // output collection
   std::vector<GEMCoPadDigi> gemCoPadV;
-  
-  // functions to add later
-  /*
-   * 1. method that declusterizes the clusters (for realistic emulation)
-   */
 };
 
 #endif

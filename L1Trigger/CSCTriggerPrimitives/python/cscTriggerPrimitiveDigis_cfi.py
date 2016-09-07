@@ -342,6 +342,13 @@ cscTriggerPrimitiveDigis = cms.EDProducer("CSCTriggerPrimitivesProducer",
 # Upgrade era customizations involving GEMs and RPCs
 # ==================================================
 
+copadParam = cms.PSet(
+    maxDeltaRoll = cms.uint32(0),
+    maxDeltaPadGE11 = cms.uint32(5),
+    maxDeltaPadGE21 = cms.uint32(5),
+    maxDeltaBX = cms.uint32(0)
+)
+
 # to be used by ME11 chambers with GEM-CSC ILT
 me11tmbSLHCGEM = cms.PSet(
     mpcBlockMe1a    = cms.uint32(0),
@@ -368,10 +375,6 @@ me11tmbSLHCGEM = cms.PSet(
 
     ## use old dataformat
     useOldLCTDataFormat = cms.bool(True),
-
-    ## copad construction
-    maxDeltaBXInCoPad = cms.int32(0),
-    maxDeltaPadInCoPad = cms.int32(1),
 
     ## matching to pads in case LowQ CLCT
     maxDeltaBXPadEven = cms.int32(1),
@@ -431,10 +434,6 @@ me21tmbSLHCGEM = cms.PSet(
 
     ## use old dataformat
     useOldLCTDataFormat = cms.bool(True),
-
-    ## copad construction
-    maxDeltaBXInCoPad = cms.int32(0),
-    maxDeltaPadInCoPad = cms.int32(2),
 
     ## matching to pads in case LowQ CLCT
     maxDeltaBXPad = cms.int32(1),
@@ -517,7 +516,8 @@ eras.run3_GEM.toModify( cscTriggerPrimitiveDigis,
                             smartME1aME1b = cms.bool(True),
                             runME11ILT = cms.bool(True)),
                         clctSLHC = dict(clctNplanesHitPattern = 3),
-                        me11tmbSLHCGEM = me11tmbSLHCGEM
+                        me11tmbSLHCGEM = me11tmbSLHCGEM,
+                        copadParam = copadParam
 )
 
 ## GEM-CSC ILT in ME2/1, CSC-RPC ILT in ME3/1 and ME4/1
@@ -530,5 +530,6 @@ eras.phase2_muon.toModify( cscTriggerPrimitiveDigis,
                            alctSLHCME3141 = cscTriggerPrimitiveDigis.alctSLHC.clone(alctNplanesHitPattern = 3),
                            clctSLHCME3141 = cscTriggerPrimitiveDigis.clctSLHC.clone(clctNplanesHitPattern = 3),
                            me21tmbSLHCGEM = me21tmbSLHCGEM,
-                           me3141tmbSLHCRPC = me3141tmbSLHCRPC
+                           me3141tmbSLHCRPC = me3141tmbSLHCRPC,
+                           copadParam = copadParam
 )

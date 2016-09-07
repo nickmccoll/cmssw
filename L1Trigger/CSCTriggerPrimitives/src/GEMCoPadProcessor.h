@@ -21,11 +21,13 @@ class GEMCoPadProcessor
   GEMCoPadProcessor(unsigned endcap, unsigned station, unsigned ring,
 		    unsigned chamber,
 		    const edm::ParameterSet& conf,
-		    const edm::ParameterSet& comm,
 		    const edm::ParameterSet& copad);
   
   /** Default constructor. Used for testing. */
   GEMCoPadProcessor();
+
+  /** Clear copad vector */
+  void clear();
 
   /** Runs the CoPad processor code. Called in normal running -- gets info from
       a collection of pad digis. */
@@ -41,9 +43,6 @@ class GEMCoPadProcessor
   /** Returns vector of CoPads in the read-out time window, if any. */
   std::vector<GEMCoPadDigi> readoutCoPads();
 
-  /** Returns vector of all found CoPads, if any. */
-  std::vector<GEMCoPadDigi> getCoPads();
-
  private:
   /** Verbosity level: 0: no print (default).
    *                   1: print only CoPads found.
@@ -52,13 +51,19 @@ class GEMCoPadProcessor
   int infoV;
 
   /** Chamber id (trigger-type labels). */
-  const unsigned theEndcap;
-  const unsigned theStation;
-  const unsigned theRing;
-  const unsigned theChamber;
+  const int theEndcap;
+  const int theStation;
+  const int theRing;
+  const int theChamber;
 
-  std::vector<GEMPadDigi> digiV[2];
+  int maxDeltaRoll_;
+  int maxDeltaPadGE11_;
+  int maxDeltaPadGE21_;
+  int maxDeltaBX_;
 
+  // output collection
+  std::vector<GEMCoPadDigi> gemCoPadV;
+  
   // functions to add later
   /*
    * 1. method that declusterizes the clusters (for realistic emulation)

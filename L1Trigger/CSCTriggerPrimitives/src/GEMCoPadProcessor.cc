@@ -15,18 +15,21 @@ GEMCoPadProcessor::GEMCoPadProcessor(unsigned endcap,
 				     unsigned ring,
 				     unsigned chamber,
 				     const edm::ParameterSet& conf,
-				     const edm::ParameterSet& comm,
-				     const edm::ParameterSet& ctmb) :
+				     const edm::ParameterSet& copad) :
   theEndcap(endcap), theStation(station), theRing(ring),
   theChamber(chamber) {
   
-  // if (isSLHC && !smartME1aME1b) edm::LogError("L1CSCTPEmulatorConfigError")
+  // if (isSLHC && !smartME1aME1b) edm::LogError("GEMCoPadProcessorConfigError")
   //   << "+++ SLHC upgrade configuration is used (isSLHC=True) but smartME1aME1b=False!\n"
   //   << "Only smartME1aME1b algorithm is so far supported for upgrade! +++\n";
 
   // Verbosity level, set to 0 (no print) by default.
   infoV        = conf.getParameter<int>("verbosity");
 
+  maxDeltaRoll_ = copad.getParameter<int>("maxDeltaRoll");
+  maxDeltaPadGE11_ = copad.getParameter<int>("maxDeltaPadGE11");
+  maxDeltaPadGE21_ = copad.getParameter<int>("maxDeltaPadGE21");
+  maxDeltaBX_ = copad.getParameter<int>("maxDeltaBX");
 }
 
 GEMCoPadProcessor::GEMCoPadProcessor() :
@@ -35,22 +38,25 @@ GEMCoPadProcessor::GEMCoPadProcessor() :
 {
 }
 
+void
+GEMCoPadProcessor::clear()
+{
+  gemCoPadV.clear();
+}
+
 std::vector<GEMCoPadDigi>
 GEMCoPadProcessor::run(const GEMPadDigiCollection* in_pads) 
 {
-  // output collection
-  std::vector<GEMCoPadDigi> gemCoPadV;
-
-  gemCoPadV.clear();
-
+  const int region((theEndcap == 1) ? 1: -1);
+  
   // Build coincidences
   for (auto det_range = in_pads->begin(); det_range != in_pads->end(); ++det_range) {
     const GEMDetId& id = (*det_range).first;
     
     // same chamber (no restriction on the roll number)
-    if (id.region() != theEndcap or id.station() != theStation or 
+    if (id.region() != region or id.station() != theStation or 
 	id.ring() != theRing or id.chamber() != theChamber) continue;
-
+    
     // all coincidences detIDs will have layer=1
     if (id.layer() != 1) continue;
     
@@ -60,25 +66,30 @@ GEMCoPadProcessor::run(const GEMPadDigiCollection* in_pads)
     auto co_pads_range = in_pads->get(co_id);
     // empty range = no possible coincidence pads
     if (co_pads_range.first == co_pads_range.second) continue;
-      
+    
     // now let's correlate the pads in two layers of this partition
     const auto& pads_range = (*det_range).second;
     for (auto p = pads_range.first; p != pads_range.second; ++p) {
       for (auto co_p = co_pads_range.first; co_p != co_pads_range.second; ++co_p) {
-
+	
+	const int deltaPad(std::abs(p->pad() - co_p->pad()));
         // check the match in pad
-        if (std::abs(p->pad() - co_p->pad()) > maxDeltaPad_) continue;
+        if ((theStation==1 and deltaPad > maxDeltaPadGE11_) or
+	    (theStation==2 and deltaPad > maxDeltaPadGE21_)) continue;
 
         // check the match in BX
         if (std::abs(p->bx() - co_p->bx()) > maxDeltaBX_) continue;
-
+	
         // make a new coincidence pad digi
         gemCoPadV.push_back(GEMCoPadDigi(id.roll(),*p,*co_p));
       }
     }
   }
-
-  
-  return emptyV;
+  return gemCoPadV;
 }
 
+std::vector<GEMCoPadDigi> 
+GEMCoPadProcessor::readoutCoPads()
+{
+  return gemCoPadV;
+}

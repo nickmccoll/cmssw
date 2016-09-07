@@ -19,13 +19,8 @@ GEMCoPadProcessor::GEMCoPadProcessor(unsigned endcap,
   theEndcap(endcap), theStation(station), theRing(ring),
   theChamber(chamber) {
   
-  // if (isSLHC && !smartME1aME1b) edm::LogError("GEMCoPadProcessorConfigError")
-  //   << "+++ SLHC upgrade configuration is used (isSLHC=True) but smartME1aME1b=False!\n"
-  //   << "Only smartME1aME1b algorithm is so far supported for upgrade! +++\n";
-
   // Verbosity level, set to 0 (no print) by default.
   infoV        = conf.getParameter<int>("verbosity");
-
   maxDeltaPadGE11_ = copad.getParameter<int>("maxDeltaPadGE11");
   maxDeltaPadGE21_ = copad.getParameter<int>("maxDeltaPadGE21");
   maxDeltaBX_ = copad.getParameter<int>("maxDeltaBX");
@@ -35,6 +30,10 @@ GEMCoPadProcessor::GEMCoPadProcessor() :
   		     theEndcap(1), theStation(1), theRing(1),
                      theChamber(1) 
 {
+  infoV = 0;
+  maxDeltaPadGE11_ = 0;
+  maxDeltaPadGE21_ = 0;
+  maxDeltaBX_ = 0;
 }
 
 void

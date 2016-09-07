@@ -940,7 +940,7 @@ CSCCorrelatedLCTDigi CSCMotherboardME3141RPC::constructLCTsRPC(const CSCCLCTDigi
     unsigned int pattern = encodePattern(clct.getPattern(), clct.getStripType());
     
     // LCT quality number -  dummy quality
-    unsigned int quality = promoteCLCTRPCquality_ ? 14 : 11;
+    unsigned int quality = promoteCLCTRPCquality_ ? 15 : 11;
     
     // Bunch crossing: pick RPC bx
     int bx = rpc.bx() + lct_central_bx;

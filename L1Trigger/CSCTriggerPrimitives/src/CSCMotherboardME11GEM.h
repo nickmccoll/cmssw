@@ -12,6 +12,7 @@
  */
 
 #include "L1Trigger/CSCTriggerPrimitives/src/CSCMotherboard.h"
+#include "L1Trigger/CSCTriggerPrimitives/src/GEMCoPadProcessor.h"
 #include "DataFormats/GEMDigi/interface/GEMPadDigiCollection.h"
 #include "DataFormats/GEMDigi/interface/GEMCoPadDigiCollection.h"
 
@@ -25,6 +26,10 @@ class CSCMotherboardME11GEM : public CSCMotherboard
   typedef std::pair<unsigned int, const GEMPadDigi> GEMPadBX;
   typedef std::vector<GEMPadBX> GEMPadsBX;
   typedef std::map<int, GEMPadsBX> GEMPads;
+
+  typedef std::pair<unsigned int, const GEMCoPadDigi> GEMCoPadBX;
+  typedef std::vector<GEMCoPadBX> GEMCoPadsBX;
+  typedef std::map<int, GEMCoPadsBX> GEMCoPads;
 
  public:
   /** Normal constructor. */
@@ -75,6 +80,7 @@ class CSCMotherboardME11GEM : public CSCMotherboard
 
   /** additional Cathode LCT processor for ME1a */
   std::unique_ptr<CSCCathodeLCTProcessor> clct1a;
+  std::unique_ptr<GEMCoPadProcessor> coPadProcessor;
 
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs1a();
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs1b();
@@ -125,12 +131,8 @@ class CSCMotherboardME11GEM : public CSCMotherboard
   void correlateLCTsGEM(CSCCLCTDigi bestCLCT, CSCCLCTDigi secondCLCT, GEMPadDigi gemPad, int roll,
 			CSCCorrelatedLCTDigi& lct1, CSCCorrelatedLCTDigi& lct2, int me);
 
-  void buildCoincidencePads(const GEMPadDigiCollection* out_pads, 
-			    GEMCoPadDigiCollection& out_co_pads,
-			    CSCDetId csc_id);
-
   void retrieveGEMPads(const GEMPadDigiCollection* pads, unsigned id);
-  void retrieveGEMCoPads(const GEMCoPadDigiCollection* pads, unsigned id);
+  void retrieveGEMCoPads();
 
   void createGEMRollEtaLUT(bool isEven);
 
@@ -161,7 +163,22 @@ class CSCMotherboardME11GEM : public CSCMotherboard
                             enum ME11Part = ME1B, bool isCopad = false, bool first = true);  
   GEMPadsBX matchingGEMPads(const CSCCLCTDigi& cLCT, const CSCALCTDigi& aLCT, const GEMPadsBX& pads = GEMPadsBX(), 
                             enum ME11Part = ME1B, bool isCopad = false, bool first = true);  
-  
+  /*
+  GEMPadsBX matchingGEMPads(const CSCCLCTDigi& cLCT, const GEMPadsBX& pads = GEMPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMPadsBX matchingGEMPads(const CSCALCTDigi& aLCT, const GEMPadsBX& pads = GEMPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMPadsBX matchingGEMPads(const CSCCLCTDigi& cLCT, const CSCALCTDigi& aLCT, const GEMPadsBX& pads = GEMPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  */
+
+  GEMCoPadsBX matchingGEMCoPads(const CSCCLCTDigi& cLCT, const GEMCoPadsBX& pads = GEMCoPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMCoPadsBX matchingGEMCoPads(const CSCALCTDigi& aLCT, const GEMCoPadsBX& pads = GEMCoPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+  GEMCoPadsBX matchingGEMCoPads(const CSCCLCTDigi& cLCT, const CSCALCTDigi& aLCT, const GEMCoPadsBX& pads = GEMCoPadsBX(), 
+                            enum ME11Part = ME1B, bool first = true);  
+
   std::vector<CSCALCTDigi> alctV;
   std::vector<CSCCLCTDigi> clctV1b;
   std::vector<CSCCLCTDigi> clctV1a;
@@ -196,10 +213,6 @@ class CSCMotherboardME11GEM : public CSCMotherboard
   bool debug_gem_matching;
   bool debug_luts;
   bool debug_gem_dphi;
-
-  //  deltas used to construct GEM coincidence pads
-  int maxDeltaBXInCoPad_;
-  int maxDeltaPadInCoPad_;
 
   //  deltas used to match to GEM pads
   int maxDeltaBXPad_;

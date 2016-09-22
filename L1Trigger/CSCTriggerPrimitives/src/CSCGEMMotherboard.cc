@@ -18,3 +18,10 @@ CSCGEMMotherboard::~CSCGEMMotherboard()
 {
 }
 
+
+std::vector<GEMCoPadDigi> CSCGEMMotherboard::readoutCoPads()
+{
+  return gemCoPadV;
+}
+
+

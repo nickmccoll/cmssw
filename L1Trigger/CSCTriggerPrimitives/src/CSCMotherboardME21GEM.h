@@ -94,15 +94,12 @@ class CSCMotherboardME21GEM : public CSCGEMMotherboard
 
   std::vector<CSCCorrelatedLCTDigi> getLCTs();
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs();
-  std::vector<GEMCoPadDigi> readoutCoPads();
 
  private: 
 
   static const CSCGEMMotherboardConfigME21 config;
 
-  /** for the case when more than 2 LCTs/BX are allowed;
-      maximum match window = 15 */
-  CSCCorrelatedLCTDigi allLCTs[MAX_LCT_BINS][15][2];
+  LCTContainer allLCTs;
 
   const CSCGeometry* csc_g;
   const GEMGeometry* gem_g;
@@ -110,7 +107,6 @@ class CSCMotherboardME21GEM : public CSCGEMMotherboard
   
   std::vector<CSCALCTDigi> alctV;
   std::vector<CSCCLCTDigi> clctV;
-  std::vector<GEMCoPadDigi> gemCoPadV;
 
   /** "preferential" index array in matching window for cross-BX sorting */
   int pref[MAX_LCT_BINS];
@@ -173,9 +169,5 @@ class CSCMotherboardME21GEM : public CSCGEMMotherboard
   // map of pad to HS
   std::map<int,int> gemPadToCscHs_;
   std::map<int,std::pair<int,int>> cscHsToGemPad_;
-
-  // map< bx , vector<gemid, pad> >
-  GEMPads pads_;
-  GEMPads coPads_;
 };
 #endif

@@ -70,7 +70,6 @@ class CSCMotherboardME11GEM : public CSCGEMMotherboard
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs1a();
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs1b();
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs(enum ME11Part me1ab);
-  std::vector<GEMCoPadDigi> readoutCoPads();
 
   /// set CSC and GEM geometries for the matching needs
   void setCSCGeometry(const CSCGeometry *g) { csc_g = g; }
@@ -85,16 +84,8 @@ class CSCMotherboardME11GEM : public CSCGEMMotherboard
 
   bool doesALCTCrossCLCT(CSCALCTDigi &a, CSCCLCTDigi &c, int me);
 
-  /** Container for first correlated LCT in ME1a. */
-  //CSCCorrelatedLCTDigi firstLCT1a[MAX_LCT_BINS];
-
-  /** Container for second correlated LCT in ME1a. */
-  //CSCCorrelatedLCTDigi secondLCT1a[MAX_LCT_BINS];
-
-  /** for the case when more than 2 LCTs/BX are allowed;
-      maximum match window = 15 */
-  CSCCorrelatedLCTDigi allLCTs1b[MAX_LCT_BINS][15][2];
-  CSCCorrelatedLCTDigi allLCTs1a[MAX_LCT_BINS][15][2];
+  LCTContainer allLCTs1b;
+  LCTContainer allLCTs1a;
 
   void correlateLCTs(CSCALCTDigi bestALCT, CSCALCTDigi secondALCT,
 		     CSCCLCTDigi bestCLCT, CSCCLCTDigi secondCLCT,
@@ -162,7 +153,6 @@ class CSCMotherboardME11GEM : public CSCGEMMotherboard
   std::vector<CSCALCTDigi> alctV;
   std::vector<CSCCLCTDigi> clctV1b;
   std::vector<CSCCLCTDigi> clctV1a;
-  std::vector<GEMCoPadDigi> gemCoPadV;
 
   /** "preferential" index array in matching window for cross-BX sorting */
   int pref[MAX_LCT_BINS];
@@ -251,9 +241,5 @@ class CSCMotherboardME11GEM : public CSCGEMMotherboard
   std::map<int,int> gemPadToCscHsME1b_;
   std::map<int,std::pair<int,int>> cscHsToGemPadME1a_;
   std::map<int,std::pair<int,int>> cscHsToGemPadME1b_;
-
-  // map< bx , vector<gemid, pad> >
-  GEMPads pads_;
-  GEMPads coPads_;
 };
 #endif

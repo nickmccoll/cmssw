@@ -101,7 +101,7 @@ void CSCMotherboardME21GEM::clear()
   for (int bx = 0; bx < MAX_LCT_BINS; bx++)
     for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++)
       for (int i=0;i<2;i++)
-        allLCTs[bx][mbx][i].clear();
+        allLCTs(bx,mbx,i).clear();
 
   gemRollToEtaLimits_.clear();
   cscWgToGemRoll_.clear();
@@ -311,7 +311,7 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
 
           correlateLCTsGEM(alct->bestALCT[bx_alct], alct->secondALCT[bx_alct],
 			   clct->bestCLCT[bx_clct], clct->secondCLCT[bx_clct],
-			   allLCTs[bx_alct][mbx][0], allLCTs[bx_alct][mbx][1], matchingPads, matchingCoPads);
+			   allLCTs(bx_alct,mbx,0), allLCTs(bx_alct,mbx,1), matchingPads, matchingCoPads);
           if (debug_gem_matching) {
           //	    if (infoV > 1) LogTrace("CSCMotherboard")
             std::cout << "Successful ALCT-CLCT match in ME21: bx_alct = " << bx_alct
@@ -322,7 +322,7 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
             std::cout << "+++ Second CLCT Details: ";
             clct->secondCLCT[bx_clct].print();
           }
-          if (allLCTs[bx_alct][mbx][0].isValid()) {
+          if (allLCTs(bx_alct,mbx,0).isValid()) {
             used_clct_mask[bx_clct] += 1;
             if (match_earliest_clct_me21_only) break;
           }
@@ -346,8 +346,8 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
           }
           
           correlateLCTsGEM(alct->bestALCT[bx_alct], alct->secondALCT[bx_alct],
-                           copads.at(0).second, allLCTs[bx_alct][0][0], allLCTs[bx_alct][0][1]);
-          if (allLCTs[bx_alct][0][0].isValid()) {
+                           copads.at(0).second, allLCTs(bx_alct,0,0), allLCTs(bx_alct,0,1));
+          if (allLCTs(bx_alct,0,0).isValid()) {
             ++nSuccesFulGEMMatches;            
             if (match_earliest_clct_me21_only) break;
           }
@@ -413,7 +413,7 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
             int mbx = std::abs(clct->bestCLCT[bx_alct].getBX()-bx_alct);
             int bx_gem = coPads[0].second.bx()+lct_central_bx;	    
             correlateLCTsGEM(clct->bestCLCT[bx_alct], clct->secondCLCT[bx_alct], coPads[0].second, GEMDetId(coPads[0].first).roll(),
-                             allLCTs[bx_gem][mbx][0], allLCTs[bx_gem][mbx][1]);
+                             allLCTs(bx_gem,mbx,0), allLCTs(bx_gem,mbx,1));
             if (debug_gem_matching) {
               //	    if (infoV > 1) LogTrace("CSCMotherboard")
               std::cout << "Successful GEM-CLCT match in ME21: bx_alct = " << bx_alct <<std::endl;
@@ -424,7 +424,7 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
               std::cout << "+++ Second CLCT Details: ";
               clct->secondCLCT[bx_alct].print();
             }
-            if (allLCTs[bx_gem][mbx][0].isValid()) {
+            if (allLCTs(bx_gem,mbx,0).isValid()) {
               used_clct_mask[bx_alct] += 1;
               if (match_earliest_clct_me21_only) break;
             }
@@ -442,11 +442,11 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
       for (int i=0;i<2;i++)
       {
         int cbx = bx + mbx - match_trig_window_size/2;
-        if (allLCTs[bx][mbx][i].isValid())
+        if (allLCTs(bx,mbx,i).isValid())
         {
           ++n;
 	  if (infoV > 0) LogDebug("CSCMotherboard") 
-	    << "LCT"<<i+1<<" "<<bx<<"/"<<cbx<<": "<<allLCTs[bx][mbx][i]<<std::endl;
+	    << "LCT"<<i+1<<" "<<bx<<"/"<<cbx<<": "<<allLCTs(bx,mbx,i)<<std::endl;
         }
       }
     
@@ -457,10 +457,10 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
       for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++)
         for (int i=0;i<2;i++)
         {
-          if (allLCTs[bx][pref[mbx]][i].isValid())
+          if (allLCTs(bx,pref[mbx],i).isValid())
           {
             n++;
-            if (n>2) allLCTs[bx][pref[mbx]][i].clear();
+            if (n>2) allLCTs(bx,pref[mbx],i).clear();
           }
         }
 
@@ -469,11 +469,11 @@ CSCMotherboardME21GEM::run(const CSCWireDigiCollection* wiredc,
         for (int i=0;i<2;i++)
         {
           int cbx = bx + mbx - match_trig_window_size/2;
-          if (allLCTs[bx][mbx][i].isValid())
+          if (allLCTs(bx,mbx,i).isValid())
           {
             n++;
             if (infoV > 0) LogDebug("CSCMotherboard") 
-              << "LCT"<<i+1<<" "<<bx<<"/"<<cbx<<": "<<allLCTs[bx][mbx][i]<<std::cout;
+              << "LCT"<<i+1<<" "<<bx<<"/"<<cbx<<": "<<allLCTs(bx,mbx,i)<<std::cout;
           }
         }
       if (infoV > 0 and n>0) LogDebug("CSCMotherboard") 
@@ -521,8 +521,8 @@ std::vector<CSCCorrelatedLCTDigi> CSCMotherboardME21GEM::getLCTs()
     else {
       for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++) {
         for (int i=0;i<2;i++) {
-          if (allLCTs[bx][mbx][i].isValid()) {
-            result.push_back(allLCTs[bx][mbx][i]);
+          if (allLCTs(bx,mbx,i).isValid()) {
+            result.push_back(allLCTs(bx,mbx,i));
           }
         }
       }
@@ -538,8 +538,8 @@ std::vector<CSCCorrelatedLCTDigi> CSCMotherboardME21GEM::sortLCTsByQuality(int b
   LCTs.clear();
   for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++) 
     for (int i=0;i<2;i++)
-      if (allLCTs[bx][mbx][i].isValid())  
-        LCTs.push_back(allLCTs[bx][mbx][i]);
+      if (allLCTs(bx,mbx,i).isValid())
+        LCTs.push_back(allLCTs(bx,mbx,i));
 
   //std::cout<<"LCT before sorting in Bx:"<<bx<<std::endl;
   //for (auto p : LCTs)
@@ -560,8 +560,8 @@ std::vector<CSCCorrelatedLCTDigi> CSCMotherboardME21GEM::sortLCTsByGEMDPhi(int b
   LCTs.clear();
   for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++) 
     for (int i=0;i<2;i++)
-      if (allLCTs[bx][mbx][i].isValid())  
-        LCTs.push_back(allLCTs[bx][mbx][i]);
+      if (allLCTs(bx,mbx,i).isValid())
+        LCTs.push_back(allLCTs(bx,mbx,i));
 
   // return sorted vector with 2 highest quality LCTs
   std::sort(LCTs.begin(), LCTs.end(), CSCMotherboard::sortByGEMDphi);
@@ -1093,7 +1093,3 @@ int CSCMotherboardME21GEM::assignGEMRoll(double eta)
 }
 
 
-std::vector<GEMCoPadDigi> CSCMotherboardME21GEM::readoutCoPads()
-{
-  return gemCoPadV;
-}

@@ -12,7 +12,7 @@
  */
 
 #include "L1Trigger/CSCTriggerPrimitives/src/CSCGEMMotherboard.h"
-
+#include "L1Trigger/CSCTriggerPrimitives/src/CSCGEMMotherboardConfig.h"
 
 class CSCMotherboardME11GEM : public CSCGEMMotherboard
 {
@@ -78,12 +78,7 @@ class CSCMotherboardME11GEM : public CSCGEMMotherboard
 
  private:
 
-  static const int lut_wg_vs_hs_me1b[48][2];
-  static const int lut_wg_vs_hs_me1a[48][2];
-  static const int lut_wg_vs_hs_me1ag[48][2];
-  static const double lut_pt_vs_dphi_gemcsc[8][3];
-  static const double lut_wg_etaMin_etaMax_odd[48][3];
-  static const double lut_wg_etaMin_etaMax_even[48][3];
+  static const CSCGEMMotherboardConfigME11 config;
 
   /** SLHC: special configuration parameters for ME11 treatment. */
   bool smartME1aME1b, disableME1a, gangedME1a;

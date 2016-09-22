@@ -11,172 +11,7 @@
 #include <set>
 #include "boost/container/flat_set.hpp"
 
-// LUT for which ME1/1 wire group can cross which ME1/a halfstrip
-// 1st index: WG number
-// 2nd index: inclusive HS range
-const int CSCMotherboardME11GEM::lut_wg_vs_hs_me1a[48][2] = {
-{0, 95},{0, 95},{0, 95},{0, 95},{0, 95},
-{0, 95},{0, 95},{0, 95},{0, 95},{0, 95},
-{0, 95},{0, 95},{0, 77},{0, 61},{0, 39},
-{0, 22},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1} };
-// a modified LUT for ganged ME1a
-const int CSCMotherboardME11GEM::lut_wg_vs_hs_me1ag[48][2] = {
-{0, 31},{0, 31},{0, 31},{0, 31},{0, 31},
-{0, 31},{0, 31},{0, 31},{0, 31},{0, 31},
-{0, 31},{0, 31},{0, 31},{0, 31},{0, 31},
-{0, 22},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1} };
-
-// LUT for which ME1/1 wire group can cross which ME1/b halfstrip
-// 1st index: WG number
-// 2nd index: inclusive HS range
-const int CSCMotherboardME11GEM::lut_wg_vs_hs_me1b[48][2] = {
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},
-{100, 127},{73, 127},{47, 127},{22, 127},{0, 127},
-{0, 127},{0, 127},{0, 127},{0, 127},{0, 127},
-{0, 127},{0, 127},{0, 127},{0, 127},{0, 127},
-{0, 127},{0, 127},{0, 127},{0, 127},{0, 127},
-{0, 127},{0, 127},{0, 127},{0, 127},{0, 127},
-{0, 127},{0, 127},{0, 127},{0, 127},{0, 127},
-{0, 127},{0, 127},{0, 127},{0, 127},{0, 105},
-{0, 93},{0, 78},{0, 63} };
-
-// LUT with bending angles of the GEM-CSC high efficiency patterns (98%)
-// 1st index: pt value = {5,10,15,20,30,40}
-// 2nd index: bending angle for odd numbered chambers
-// 3rd index: bending angle for even numbered chambers
-/*
-const double CSCMotherboardME11GEM::lut_pt_vs_dphi_gemcsc[7][3] = {
-  {5.,  0.02203511, 0.00930056},
-  {6 ,  0.0182579 , 0.00790009},
-  {10., 0.01066000, 0.00483286},
-  {15., 0.00722795, 0.00363230},
-  {20., 0.00562598, 0.00304878},
-  {30., 0.00416544, 0.00253782},
-  {40., 0.00342827, 0.00230833} };
-*/
-
-const double CSCMotherboardME11GEM::lut_pt_vs_dphi_gemcsc[8][3] = {
-  {3, 0.03971647, 0.01710244},                                    
-  {5, 0.02123785, 0.00928431}, 
-  {7, 0.01475524, 0.00650928},                                                                                                  
-  {10, 0.01023299, 0.00458796},                                                                                                 
-  {15, 0.00689220, 0.00331313},                                                                  
-  {20, 0.00535176, 0.00276152},                                                                                                                        
-  {30, 0.00389050, 0.00224959},               
-  {40, 0.00329539, 0.00204670}};
-
-const double CSCMotherboardME11GEM::lut_wg_etaMin_etaMax_odd[48][3] = {
-{0, 2.44005, 2.44688},
-{1, 2.38863, 2.45035},
-{2, 2.32742, 2.43077},
-{3, 2.30064, 2.40389},
-{4, 2.2746, 2.37775},
-{5, 2.24925, 2.35231},
-{6, 2.22458, 2.32754},
-{7, 2.20054, 2.30339},
-{8, 2.1771, 2.27985},
-{9, 2.15425, 2.25689},
-{10, 2.13194, 2.23447},
-{11, 2.11016, 2.21258},
-{12, 2.08889, 2.19119},
-{13, 2.06809, 2.17028},
-{14, 2.04777, 2.14984},
-{15, 2.02788, 2.12983},
-{16, 2.00843, 2.11025},
-{17, 1.98938, 2.09108},
-{18, 1.97073, 2.0723},
-{19, 1.95246, 2.0539},
-{20, 1.93456, 2.03587},
-{21, 1.91701, 2.01818},
-{22, 1.8998, 2.00084},
-{23, 1.88293, 1.98382},
-{24, 1.86637, 1.96712},
-{25, 1.85012, 1.95073},
-{26, 1.83417, 1.93463},
-{27, 1.8185, 1.91882},
-{28, 1.80312, 1.90329},
-{29, 1.788, 1.88803},
-{30, 1.77315, 1.87302},
-{31, 1.75855, 1.85827},
-{32, 1.74421, 1.84377},
-{33, 1.7301, 1.8295},
-{34, 1.71622, 1.81547},
-{35, 1.70257, 1.80166},
-{36, 1.68914, 1.78807},
-{37, 1.67592, 1.77469},
-{38, 1.66292, 1.76151},
-{39, 1.65011, 1.74854},
-{40, 1.63751, 1.73577},
-{41, 1.62509, 1.72319},
-{42, 1.61287, 1.71079},
-{43, 1.60082, 1.69857},
-{44, 1.59924, 1.68654},
-{45, 1.6006, 1.67467},
-{46, 1.60151, 1.66297},
-{47, 1.60198, 1.65144} };
-
-const double CSCMotherboardME11GEM::lut_wg_etaMin_etaMax_even[48][3] = {
-{0, 2.3917, 2.39853},
-{1, 2.34037, 2.40199},
-{2, 2.27928, 2.38244},
-{3, 2.25254, 2.35561},
-{4, 2.22655, 2.32951},
-{5, 2.20127, 2.30412},
-{6, 2.17665, 2.27939},
-{7, 2.15267, 2.25529},
-{8, 2.12929, 2.2318},
-{9, 2.1065, 2.20889},
-{10, 2.08425, 2.18652},
-{11, 2.06253, 2.16468},
-{12, 2.04132, 2.14334},
-{13, 2.0206, 2.12249},
-{14, 2.00033, 2.1021},
-{15, 1.98052, 2.08215},
-{16, 1.96113, 2.06262},
-{17, 1.94215, 2.04351},
-{18, 1.92357, 2.02479},
-{19, 1.90538, 2.00645},
-{20, 1.88755, 1.98847},
-{21, 1.87007, 1.97085},
-{22, 1.85294, 1.95357},
-{23, 1.83614, 1.93662},
-{24, 1.81965, 1.91998},
-{25, 1.80348, 1.90365},
-{26, 1.78761, 1.88762},
-{27, 1.77202, 1.87187},
-{28, 1.75672, 1.85641},
-{29, 1.74168, 1.84121},
-{30, 1.72691, 1.82628},
-{31, 1.7124, 1.8116},
-{32, 1.69813, 1.79716},
-{33, 1.68411, 1.78297},
-{34, 1.67032, 1.769},
-{35, 1.65675, 1.75526},
-{36, 1.64341, 1.74174},
-{37, 1.63028, 1.72844},
-{38, 1.61736, 1.71534},
-{39, 1.60465, 1.70245},
-{40, 1.59213, 1.68975},
-{41, 1.57981, 1.67724},
-{42, 1.56767, 1.66492},
-{43, 1.55572, 1.65278},
-{44, 1.55414, 1.64082},
-{45, 1.55549, 1.62903},
-{46, 1.5564, 1.61742},
-{47, 1.55686, 1.60596} };
+const CSCGEMMotherboardConfigME11 CSCMotherboardME11GEM::config;
 
 CSCMotherboardME11GEM::CSCMotherboardME11GEM(unsigned endcap, unsigned station,
 			       unsigned sector, unsigned subsector,
@@ -421,8 +256,8 @@ void CSCMotherboardME11GEM::run(const CSCWireDigiCollection* wiredc,
     // loop on all wiregroups to create a LUT <WG,rollMin,rollMax>
     const int numberOfWG(keyLayerGeometryME1b->numberOfWireGroups());
     for (int i = 0; i< numberOfWG; ++i){
-      auto etaMin(isEven ? lut_wg_etaMin_etaMax_even[i][1] : lut_wg_etaMin_etaMax_odd[i][1]); 
-      auto etaMax(isEven ? lut_wg_etaMin_etaMax_even[i][2] : lut_wg_etaMin_etaMax_odd[i][2]); 
+      auto etaMin(isEven ? (*config.lut_wg_eta_even)[i][1] : (*config.lut_wg_eta_odd)[i][1]);
+      auto etaMax(isEven ? (*config.lut_wg_eta_even)[i][2] : (*config.lut_wg_eta_odd)[i][2]);
       cscWgToGemRoll_[i] = std::make_pair(assignGEMRoll(etaMin), assignGEMRoll(etaMax));
     }
     if (debug_luts){
@@ -1236,23 +1071,23 @@ bool CSCMotherboardME11GEM::doesALCTCrossCLCT(CSCALCTDigi &a, CSCCLCTDigi &c, in
     {
       // wrap around ME11 HS number for -z endcap
       if (theEndcap==2) key_hs = 95 - key_hs;
-      if ( key_hs >= lut_wg_vs_hs_me1a[key_wg][0] and 
-           key_hs <= lut_wg_vs_hs_me1a[key_wg][1]    ) return true;
+      if ( key_hs >= (*config.lut_wg_vs_hs_me1a)[key_wg][0] and
+           key_hs <= (*config.lut_wg_vs_hs_me1a)[key_wg][1]    ) return true;
       return false;
     }
     else
     {
       if (theEndcap==2) key_hs = 31 - key_hs;
-      if ( key_hs >= lut_wg_vs_hs_me1ag[key_wg][0] and
-           key_hs <= lut_wg_vs_hs_me1ag[key_wg][1]    ) return true;
+      if ( key_hs >= (*config.lut_wg_vs_hs_me1ag)[key_wg][0] and
+           key_hs <= (*config.lut_wg_vs_hs_me1ag)[key_wg][1]    ) return true;
       return false;
     }
   }
   if ( me == ME1B)
   {
     if (theEndcap==2) key_hs = 127 - key_hs;
-    if ( key_hs >= lut_wg_vs_hs_me1b[key_wg][0] and 
-         key_hs <= lut_wg_vs_hs_me1b[key_wg][1]      ) return true;
+    if ( key_hs >= (*config.lut_wg_vs_hs_me1b)[key_wg][0] and
+         key_hs <= (*config.lut_wg_vs_hs_me1b)[key_wg][1]      ) return true;
   }
   return false;
 }
@@ -1582,7 +1417,7 @@ CSCCorrelatedLCTDigi CSCMotherboardME11GEM::constructLCTsGEM(const CSCALCTDigi& 
 							  int ME, bool oldDataFormat) 
 {
   auto mymap(ME==ME1A ? gemPadToCscHsME1a_ : gemPadToCscHsME1b_);
-  auto wgvshs(ME==ME1A ? lut_wg_vs_hs_me1a : lut_wg_vs_hs_me1b);
+  auto wgvshs(ME==ME1A ? (*config.lut_wg_vs_hs_me1a) : (*config.lut_wg_vs_hs_me1b));
   if (oldDataFormat){
     // CLCT pattern number - set it to a highest value
     // hack to get LCTs in the CSCTF

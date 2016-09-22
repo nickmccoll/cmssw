@@ -12,6 +12,7 @@
  */
 
 #include "L1Trigger/CSCTriggerPrimitives/src/CSCGEMMotherboard.h"
+#include "L1Trigger/CSCTriggerPrimitives/src/CSCGEMMotherboardConfig.h"
 
 class CSCMotherboardME21GEM : public CSCGEMMotherboard
 {
@@ -97,13 +98,11 @@ class CSCMotherboardME21GEM : public CSCGEMMotherboard
 
  private: 
 
+  static const CSCGEMMotherboardConfigME21 config;
+
   /** for the case when more than 2 LCTs/BX are allowed;
       maximum match window = 15 */
   CSCCorrelatedLCTDigi allLCTs[MAX_LCT_BINS][15][2];
-
-  static const double lut_pt_vs_dphi_gemcsc[8][3];
-  static const double lut_wg_eta_odd[112][2];
-  static const double lut_wg_eta_even[112][2];
 
   const CSCGeometry* csc_g;
   const GEMGeometry* gem_g;

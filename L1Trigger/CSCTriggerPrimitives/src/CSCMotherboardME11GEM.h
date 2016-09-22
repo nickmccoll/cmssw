@@ -11,26 +11,11 @@
  *
  */
 
-#include "L1Trigger/CSCTriggerPrimitives/src/CSCMotherboard.h"
-#include "L1Trigger/CSCTriggerPrimitives/src/GEMCoPadProcessor.h"
-#include "DataFormats/GEMDigi/interface/GEMPadDigiCollection.h"
-#include "DataFormats/GEMDigi/interface/GEMCoPadDigiCollection.h"
+#include "L1Trigger/CSCTriggerPrimitives/src/CSCGEMMotherboard.h"
 
-class CSCGeometry;
-class CSCChamber;
-class GEMGeometry;
-class GEMSuperChamber;
 
-class CSCMotherboardME11GEM : public CSCMotherboard
+class CSCMotherboardME11GEM : public CSCGEMMotherboard
 {
-  typedef std::pair<unsigned int, const GEMPadDigi> GEMPadBX;
-  typedef std::vector<GEMPadBX> GEMPadsBX;
-  typedef std::map<int, GEMPadsBX> GEMPads;
-
-  typedef std::pair<unsigned int, const GEMCoPadDigi> GEMCoPadBX;
-  typedef std::vector<GEMCoPadBX> GEMCoPadsBX;
-  typedef std::map<int, GEMCoPadsBX> GEMCoPads;
-
  public:
   /** Normal constructor. */
   CSCMotherboardME11GEM(unsigned endcap, unsigned station, unsigned sector, 

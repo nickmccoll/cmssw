@@ -182,7 +182,7 @@ CSCMotherboardME11GEM::CSCMotherboardME11GEM(unsigned endcap, unsigned station,
 			       unsigned sector, unsigned subsector,
 			       unsigned chamber,
 			       const edm::ParameterSet& conf) :
-		CSCMotherboard(endcap, station, sector, subsector, chamber, conf)
+		CSCGEMMotherboard(endcap, station, sector, subsector, chamber, conf)
 {
   const edm::ParameterSet commonParams(conf.getParameter<edm::ParameterSet>("commonParam"));
 
@@ -287,7 +287,7 @@ CSCMotherboardME11GEM::CSCMotherboardME11GEM(unsigned endcap, unsigned station,
 }
 
 
-CSCMotherboardME11GEM::CSCMotherboardME11GEM() : CSCMotherboard()
+CSCMotherboardME11GEM::CSCMotherboardME11GEM() : CSCGEMMotherboard()
 {
   // Constructor used only for testing.
 

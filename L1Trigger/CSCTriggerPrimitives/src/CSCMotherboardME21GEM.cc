@@ -61,7 +61,7 @@ CSCMotherboardME21GEM::CSCMotherboardME21GEM(unsigned endcap, unsigned station,
                                unsigned sector, unsigned subsector,
                                unsigned chamber,
                                const edm::ParameterSet& conf) :
-  CSCMotherboard(endcap, station, sector, subsector, chamber, conf)
+  CSCGEMMotherboard(endcap, station, sector, subsector, chamber, conf)
 {
   const edm::ParameterSet commonParams(conf.getParameter<edm::ParameterSet>("commonParam"));
   runME21ILT_ = commonParams.getParameter<bool>("runME21ILT");

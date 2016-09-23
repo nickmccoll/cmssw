@@ -42,12 +42,8 @@ class CSCMotherboardME11GEM : public CSCGEMMotherboard
   enum ME11Part {ME1B = 1, ME1A=4};
 
   /** Methods to sort the LCTs */
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByQuality(int bx, enum ME11Part = ME1B);
   std::vector<CSCCorrelatedLCTDigi> sortLCTsByQuality(enum ME11Part = ME1B);
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByQuality(std::vector<CSCCorrelatedLCTDigi>);
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByGEMDPhi(int bx, enum ME11Part = ME1B);
   std::vector<CSCCorrelatedLCTDigi> sortLCTsByGEMDPhi(enum ME11Part = ME1B);
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByGEMDPhi(std::vector<CSCCorrelatedLCTDigi>);
   
   /** Returns vectors of found ALCTs in ME1a and ME1b, if any. */
   std::vector<CSCALCTDigi> getALCTs1b() {return alctV;}

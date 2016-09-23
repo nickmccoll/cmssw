@@ -14,7 +14,7 @@ CSCMotherboardME21GEM::CSCMotherboardME21GEM(unsigned endcap, unsigned station,
                                unsigned sector, unsigned subsector,
                                unsigned chamber,
                                const edm::ParameterSet& conf) :
-  CSCGEMMotherboard(endcap, station, sector, subsector, chamber, conf)
+  CSCGEMMotherboard(endcap, station, sector, subsector, chamber, conf),  allLCTs(match_trig_window_size)
 {
   const edm::ParameterSet commonParams(conf.getParameter<edm::ParameterSet>("commonParam"));
   runME21ILT_ = commonParams.getParameter<bool>("runME21ILT");
@@ -509,66 +509,17 @@ std::vector<CSCCorrelatedLCTDigi> CSCMotherboardME21GEM::getLCTs()
 {
   std::vector<CSCCorrelatedLCTDigi> result;
   for (int bx = 0; bx < MAX_LCT_BINS; bx++) {
-    std::vector<CSCCorrelatedLCTDigi> tmpV;
+    std::vector<CSCCorrelatedLCTDigi> tmpV = allLCTs.getTimeMatched(bx);
     if (tmb_cross_bx_algo == 2) {
-      tmpV = sortLCTsByQuality(bx);
-      result.insert(result.end(), tmpV.begin(), tmpV.end());
+      CSCGEMMotherboardFunctions::sortLCTs(tmpV,max_me21_lcts,CSCMotherboard::sortByQuality);
     }
     else if (tmb_cross_bx_algo == 3) {
-      tmpV = sortLCTsByGEMDPhi(bx);
-      result.insert(result.end(), tmpV.begin(), tmpV.end());
+      CSCGEMMotherboardFunctions::sortLCTs(tmpV,max_me21_lcts,CSCMotherboard::sortByGEMDphi);
     }
-    else {
-      for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++) {
-        for (int i=0;i<2;i++) {
-          if (allLCTs(bx,mbx,i).isValid()) {
-            result.push_back(allLCTs(bx,mbx,i));
-          }
-        }
-      }
-    }
+    result.insert(result.end(), tmpV.begin(), tmpV.end());
   }
   return result;
 }
-
-//sort LCTs by Quality in each BX
-std::vector<CSCCorrelatedLCTDigi> CSCMotherboardME21GEM::sortLCTsByQuality(int bx)
-{
-  std::vector<CSCCorrelatedLCTDigi> LCTs;
-  LCTs.clear();
-  for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++) 
-    for (int i=0;i<2;i++)
-      if (allLCTs(bx,mbx,i).isValid())
-        LCTs.push_back(allLCTs(bx,mbx,i));
-
-  //std::cout<<"LCT before sorting in Bx:"<<bx<<std::endl;
-  //for (auto p : LCTs)
-    //  std::cout<< p <<std::endl;
-  // return sorted vector with 2 highest quality LCTs
-  std::sort(LCTs.begin(), LCTs.end(), CSCMotherboard::sortByQuality);
-  if (LCTs.size()> max_me21_lcts) LCTs.erase(LCTs.begin()+max_me21_lcts, LCTs.end());
-  //std::cout<<"LCT after sorting by quality in BX:"<<bx<<std::endl;
-  //for (auto p : LCTs)
-   //   std::cout<< p <<std::endl;
-  return  LCTs;
-}
-
-//sort LCTs by dphi in each BX
-std::vector<CSCCorrelatedLCTDigi> CSCMotherboardME21GEM::sortLCTsByGEMDPhi(int bx)
-{
-  std::vector<CSCCorrelatedLCTDigi> LCTs;
-  LCTs.clear();
-  for (unsigned int mbx = 0; mbx < match_trig_window_size; mbx++) 
-    for (int i=0;i<2;i++)
-      if (allLCTs(bx,mbx,i).isValid())
-        LCTs.push_back(allLCTs(bx,mbx,i));
-
-  // return sorted vector with 2 highest quality LCTs
-  std::sort(LCTs.begin(), LCTs.end(), CSCMotherboard::sortByGEMDphi);
-  if (LCTs.size()> max_me21_lcts) LCTs.erase(LCTs.begin()+max_me21_lcts, LCTs.end());
-  return  LCTs;
-}
-
 
 void CSCMotherboardME21GEM::correlateLCTsGEM(CSCALCTDigi bestALCT,
 					  CSCALCTDigi secondALCT,

@@ -26,9 +26,13 @@ public:
   /** for the case when more than 2 LCTs/BX are allowed;
       maximum match window = 15 */
 
-  struct LCTContainer {
+  class LCTContainer {
+  public:
+    LCTContainer (unsigned int match_trig_window_size ) : match_trig_window_size(match_trig_window_size){}
     CSCCorrelatedLCTDigi& operator()(int bx, int match_bx, int lct) { return data[bx][match_bx][lct]; }
+    std::vector<CSCCorrelatedLCTDigi> getTimeMatched(const int bx) const;
     CSCCorrelatedLCTDigi data[CSCMotherboard::MAX_LCT_BINS][15][2];
+    const unsigned int match_trig_window_size;
   };
 
   CSCGEMMotherboard(unsigned endcap, unsigned station, unsigned sector,
@@ -58,7 +62,7 @@ protected:
 namespace CSCGEMMotherboardFunctions {
 
 /** Methods to sort the LCTs */
-std::vector<CSCCorrelatedLCTDigi> sortLCTsByQuality(int bx);
+void sortLCTs(std::vector<CSCCorrelatedLCTDigi>& lcts, const unsigned int maxNumLCTS, bool (*sorter)(const CSCCorrelatedLCTDigi&,const CSCCorrelatedLCTDigi&)  );
 }
 
 #endif

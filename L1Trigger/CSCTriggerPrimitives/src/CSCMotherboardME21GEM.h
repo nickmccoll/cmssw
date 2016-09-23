@@ -86,11 +86,6 @@ class CSCMotherboardME21GEM : public CSCGEMMotherboard
   /** additional processor for GEMs */
   std::unique_ptr<GEMCoPadProcessor> coPadProcessor;
 
-  /** Methods to sort the LCTs */
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByQuality(int bx);
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByQuality(std::vector<CSCCorrelatedLCTDigi>);
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByGEMDPhi(int bx);
-  std::vector<CSCCorrelatedLCTDigi> sortLCTsByGEMDPhi(std::vector<CSCCorrelatedLCTDigi>);
 
   std::vector<CSCCorrelatedLCTDigi> getLCTs();
   std::vector<CSCCorrelatedLCTDigi> readoutLCTs();

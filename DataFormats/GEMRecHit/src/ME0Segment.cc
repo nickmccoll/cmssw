@@ -12,6 +12,7 @@ namespace {
   inline
   DetId buildDetId(ME0DetId id) {
     return ME0DetId(id.region(),1,id.chamber(),id.roll());
+    //return ME0DetId(id.chamberId());
   }
 }
 

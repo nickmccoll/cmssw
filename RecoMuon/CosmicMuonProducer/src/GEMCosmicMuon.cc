@@ -180,7 +180,7 @@ void GEMCosmicMuon::produce(edm::Event& ev, const edm::EventSetup& setup) {
   //cout << maxChi2 << endl;
   //cout << "GEMCosmicMuon::bestTrajectory " << bestTrajectory.foundHits() << endl;
   //cout << "GEMCosmicMuon::bestTrajectory chiSquared/ ndof " << bestTrajectory.chiSquared()/float(bestTrajectory.ndof()) << endl;
-  cout << maxChi2 << endl;
+  //cout << maxChi2 << endl;
   // make track
   const FreeTrajectoryState* ftsAtVtx = bestTrajectory.geometricalInnermostState().freeState();
    

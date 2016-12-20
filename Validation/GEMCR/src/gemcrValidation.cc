@@ -212,7 +212,7 @@ Trajectory gemcrValidation::makeTrajectory(TrajectorySeed seed, MuonTransientTra
     //if (ch == testChamber) continue;
     std::shared_ptr<MuonTransientTrackingRecHit> tmpRecHit;
     tsosCurrent = theService->propagator("SteppingHelixPropagatorAny")->propagate(tsosCurrent,ch.surface());
-    if (!tsosCurrent.isValid()) continue;
+    if (!tsosCurrent.isValid()) return Trajectory();
     GlobalPoint tsosGP = tsosCurrent.freeTrajectoryState()->position();
     float maxR = 9999;
     for (auto hit : muRecHits){
@@ -382,7 +382,7 @@ void gemcrValidation::analyze(const edm::Event& e, const edm::EventSetup& iSetup
     trajectoryh->Fill(0, trajectorySeeds->size());  
     //cout <<"test chamber #" << findIndex(tch.id()) << ", "<< countTC <<" # of seeds : " << trajectorySeeds->size() << ", # of recHit for track :" << muRecHits.size() << ", # of recHit for testChamber : " << testRecHits.size()<< endl;
     //if (trajectorySeeds->size() > 100) continue;
-    float maxChi2 = trackChi2;
+    float maxChi2 = 10000.0;
     int countTR = 0;
     for (auto seed : *trajectorySeeds){
       Trajectory smoothed;
@@ -395,7 +395,6 @@ void gemcrValidation::analyze(const edm::Event& e, const edm::EventSetup& iSetup
       //cout << smoothed.chiSquared()/float(smoothed.ndof()) << endl;
       if (smoothed.isValid()){
         trajectoryh->Fill(2,1);
-        gem_chamber_track[findIndex(tch.id())]->Fill(1.5);
         //cout << "Trajectory " << countTR << ", chi2 : " << smoothed.chiSquared()/float(smoothed.ndof()) << ", track ResX :" << trackResX << ", track ResY : " << trackResY << endl;
         if (maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())){
           maxChi2 = smoothed.chiSquared()/float(smoothed.ndof());
@@ -410,8 +409,11 @@ void gemcrValidation::analyze(const edm::Event& e, const edm::EventSetup& iSetup
     //cout << "# of trajectories : " << countTR << endl;
     //cout <<maxChi2 << endl;
     if (!bestTrajectory.isValid()) continue; //{cout<<"no Best Trajectory" << endl; continue;}
+    gem_chamber_track[findIndex(tch.id())]->Fill(1.5);
+    if (maxChi2 > trackChi2 or maxChi2 < 9) continue;
     trajectoryh->Fill(3,1);
     gem_chamber_bestChi2[findIndex(tch.id())]->Fill(maxChi2);
+    //cout << maxChi2 << endl;
     gem_chamber_track[findIndex(tch.id())]->Fill(2.5);
     PTrajectoryStateOnDet ptsd1(bestSeed.startingState());
     DetId did(ptsd1.detId());

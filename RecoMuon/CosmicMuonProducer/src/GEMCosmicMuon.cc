@@ -161,6 +161,7 @@ void GEMCosmicMuon::produce(edm::Event& ev, const edm::EventSetup& setup) {
       trajectorys->push_back(smoothed);
       //      cout << "GEMCosmicMuon::Trajectory " << smoothed.foundHits() << endl;
       //      cout << "GEMCosmicMuon::Trajectory chiSquared/ ndof " << smoothed.chiSquared()/float(smoothed.ndof()) << endl;
+      //if (( maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())) and ( smoothed.chiSquared()/float(smoothed.ndof()) > 7.0)){
       if (maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())){
 	maxChi2 = smoothed.chiSquared()/float(smoothed.ndof());
 	bestTrajectory = smoothed;
@@ -176,12 +177,13 @@ void GEMCosmicMuon::produce(edm::Event& ev, const edm::EventSetup& setup) {
     ev.put(std::move(trajectorys));
     return;
   }
+  //cout << maxChi2 << endl;
   //cout << "GEMCosmicMuon::bestTrajectory " << bestTrajectory.foundHits() << endl;
   //cout << "GEMCosmicMuon::bestTrajectory chiSquared/ ndof " << bestTrajectory.chiSquared()/float(bestTrajectory.ndof()) << endl;
-
+  cout << maxChi2 << endl;
   // make track
   const FreeTrajectoryState* ftsAtVtx = bestTrajectory.geometricalInnermostState().freeState();
-
+   
   GlobalPoint pca = ftsAtVtx->position();
   math::XYZPoint persistentPCA(pca.x(),pca.y(),pca.z());
   GlobalVector p = ftsAtVtx->momentum();
@@ -292,7 +294,7 @@ Trajectory GEMCosmicMuon::makeTrajectory(TrajectorySeed seed, MuonTransientTrack
     //const DetLayer* layer = theService->detLayerGeometry()->idToLayer( ch->id().rawId() );
     std::shared_ptr<MuonTransientTrackingRecHit> tmpRecHit;
     tsosCurrent = theService->propagator("SteppingHelixPropagatorAny")->propagate(tsosCurrent,ch->surface());
-    if (!tsosCurrent.isValid()) continue;
+    if (!tsosCurrent.isValid()) return Trajectory();
     GlobalPoint tsosGP = tsosCurrent.freeTrajectoryState()->position();
     //TrackingRecHit *tmpRecHit = new TrackingRecHit(ch);
     //cout << "tsosGP "<< tsosGP <<endl;

@@ -12,7 +12,7 @@ RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000080_Cosmics_TIF_2016-12-0
 #RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000113_Cosmics_TIF_2016-12-07.dat"
 #RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000209_Cosmics_TIF_2016-12-13.dat"
 RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000192_Cosmics_TIF_2016-12-12_chunk_0.dat"
-RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000192_Cosmics_TIF_2016-12-12.dat"
+#RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000192_Cosmics_TIF_2016-12-12.dat"
 #RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000193_Cosmics_TIF_2016-12-12_chunk_0.dat"
 #RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000208_LatencyScan_TIF_2016-12-13.dat"
 #RAWFileName="/afs/cern.ch/user/h/hyunyong/public/run000186_LatencyScan_TIF_2016-12-12.dat"
@@ -25,7 +25,7 @@ makeTrack = True
 minClusterSize = 1
 maxClusterSize = 10
 maxResidual = 5.0 # cm
-trackChi2 = 3
+trackChi2 = 10
 trackResX = 3.0 #cm
 trackResY = 1.5
 tag = ""
@@ -67,7 +67,7 @@ if not tag == "":
   OutputFileName.replace(".root", "_%s.root"%tag)
 
 print OutputFileName, " will be generted."
-sqlite_file = os.environ['SRT_CMSSW_BASE_SCRAMRTDEL']+'/src/EventFilter/GEMRawToDigi/test/GEMEMap_CosmicStand_8Nov2016.db'
+sqlite_file = os.environ['SRT_CMSSW_BASE_SCRAMRTDEL']+'/src/EventFilter/GEMRawToDigi/test/GEMEMap_CosmicStand_18Dec2016_TSCOL1-3_TSROW1-5_D1-2_Long.db'
 
 def configureRun(SLOTLIST=[], VFATLIST=[], COLUMNLIST=[], ROWLIST=[], LAYERLIST=[], chamber=[], columnStand=[], rowStand=[], layerSC=[]):
 

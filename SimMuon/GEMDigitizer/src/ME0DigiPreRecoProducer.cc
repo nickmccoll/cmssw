@@ -86,10 +86,14 @@ void ME0DigiPreRecoProducer::produce(edm::Event& e, const edm::EventSetup& event
     const ME0DetId detId(roll->id());
     const uint32_t rawId(detId.rawId());
     const auto & simHits(hitMap[rawId]);
-    
-    LogDebug("ME0DigiPreRecoProducer") 
-      << "ME0DigiPreRecoProducer: found " << simHits.size() << " hit(s) in eta partition" << rawId;
-    
+
+    #ifdef EDM_ML_DEBUG
+    if(simHits.size()>0) {
+      LogDebug("ME0DigiPreRecoProducer") 
+	<< "ME0DigiPreRecoProducer: found " << simHits.size() << " hit(s) in eta partition" << rawId;
+    }
+    #endif
+
     me0DigiPreRecoModel_->simulateSignal(roll, simHits, engine);
     me0DigiPreRecoModel_->simulateNoise(roll, engine);
     me0DigiPreRecoModel_->fillDigis(rawId, *digis);

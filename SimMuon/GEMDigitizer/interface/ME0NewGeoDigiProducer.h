@@ -39,6 +39,7 @@ private:
 		const TrapezoidalStripTopology * getTopo(const unsigned int partIdx) const {return stripTopos[partIdx];}
 		float getPartCenter(const unsigned int partIdx) const; //position of part. in chamber
 		float getCentralTOF(const ME0DetId& me0Id, unsigned int partIdx) const {return tofs[me0Id.layer() -1 ][partIdx];} //in detId layer numbers stat at 1
+		unsigned int numLayers() const {return tofs.size();}
 	private:
 		TrapezoidalStripTopology * buildTopo(const std::vector<float>& _p) const;
 	private:
@@ -72,7 +73,9 @@ private:
   double       timeResolution    ; // smear time by gaussian with this sigma (in ns)....negative for no smearing
   int          minBXReadout      ; // Minimum BX to readout
   int          maxBXReadout      ; // Maximum BX to readout
+  std::vector<int> layerReadout  ; // Don't readout layer if entry is 0 (Layer number 1 in the numbering scheme is idx 0)
   bool         mergeDigis        ; // Keep only one digi at the same chamber, strip, partition, and BX
+
 
   edm::EDGetTokenT<ME0DigiPreRecoCollection> token;
   const ME0Geometry* geometry;

@@ -140,6 +140,7 @@ ME0NewGeoDigiProducer::ME0NewGeoDigiProducer(const edm::ParameterSet& ps) :
 		timeResolution     (ps.getParameter<double>("timeResolution")),
 		minBXReadout       (ps.getParameter<int>("minBXReadout")),
 		maxBXReadout       (ps.getParameter<int>("maxBXReadout")),
+		layerReadout       (ps.getParameter<std::vector<int>>("layerReadout")),
 		mergeDigis         (ps.getParameter<bool>("mergeDigis")),
 		token(consumes<ME0DigiPreRecoCollection>(edm::InputTag(ps.getParameter<std::string>("inputCollection"))))
 {
@@ -186,6 +187,11 @@ void ME0NewGeoDigiProducer::beginRun(const edm::Run&, const edm::EventSetup& eve
 	tempGeo = new TemporaryGeometry(geometry,numberOfSrips,numberOfPartitions);
 	LogDebug("ME0NewGeoDigiProducer")
 	<< "Done building temporary geometry!" << std::endl;
+
+	if(tempGeo->numLayers() != layerReadout.size() )
+		throw cms::Exception("Configuration") << "ME0NewGeoDigiProducer::beginRun() - The geoemtry has "<<tempGeo->numLayers()
+		<< " layers, but the readout of "<<layerReadout.size() << " were specified with the layerReadout parameter."  ;
+
 }
 
 
@@ -258,7 +264,13 @@ void ME0NewGeoDigiProducer::buildDigis(const ME0DigiPreRecoCollection & input_di
 				digi != range.second;digi++) {
 			LogTrace("ME0NewGeoDigiProducer::buildDigis") << std::endl<< "(" <<digi->x() <<","<< digi->y()<<","<<digi->tof()<<","<<digi->pdgid()<<","<<digi->prompt()<<")-> ";
 
-			//if neutron and we are filtering skip them first
+			//If we don't readout this layer skip
+			if(!layerReadout[me0Id.layer() -1 ]) {
+				output_digimap.insertDigi(me0Id, -1);
+				continue;
+			}
+
+			//if neutron and we are filtering skip
 			if(!digi->prompt() && neutronAcceptance < 1.0 )
 				if (CLHEP::RandFlat::shoot(engine) > neutronAcceptance){
 					output_digimap.insertDigi(me0Id, -1);

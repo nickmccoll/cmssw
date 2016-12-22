@@ -26,32 +26,32 @@ ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry(const ME0Geometry* g
 	if(!chambers.size())
 		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - No ME0Chambers in geometry.";
 	const auto* mainChamber = chambers.front();
-//	const unsigned int nLayers = chambers.front()->nLayers();
-	const unsigned int nLayers = 6;
-//	if(!nLayers)
-//		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - ME0Chamber has no layers.";
-//	if(!mainChamber->layer(0)->nEtaPartitions())
-//		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - ME0Layer has no partitions.";
-//	if(mainChamber->layer(0)->nEtaPartitions() != 1)
-//		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - This module is only compatitble with geometries that contain only one partiton per ME0Layer.";
+	const unsigned int nLayers = chambers.front()->nLayers();
+	if(!nLayers)
+		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - ME0Chamber has no layers.";
+	const auto* mainLayer = mainChamber->layers()[0];
+	if(!mainLayer->nEtaPartitions())
+		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - ME0Layer has no partitions.";
+	if(mainLayer->nEtaPartitions() != 1)
+		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - This module is only compatitble with geometries that contain only one partiton per ME0Layer.";
 
-	const auto* mainPartition = mainChamber->etaPartition(0);
+	const auto* mainPartition = mainLayer->etaPartitions()[0];
 	const TrapezoidalStripTopology * mainTopo = dynamic_cast<const TrapezoidalStripTopology*>(&mainPartition->topology());
 	if(!mainTopo)
 		throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - ME0 strip topology must be of type TrapezoidalStripTopology. This module cannot be used";
 
-//	for(const auto& chamber : geometry->chambers() ){
-//		if(chamber->nLayers() != int(nLayers))
-//			throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0Chambers have the same number of layers. This module cannot be used.";
-//		for(unsigned int iL = 0; iL < nLayers; ++iL){
-//			if(chamber->layer(iL)->nEtaPartitions() != mainChamber->nEtaPartitions())
-//				throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0Layers have the same number of partitions. This module cannot be used.";
-//			if(chamber->layer(iL)->etaPartition(0)->specs()->parameters() != mainPartition->specs()->parameters())
-//				throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0 ETA partitions have the same properties. This module cannot be used.";
-//			if(std::fabs(chamber->layer(iL)->etaPartition(0)->position().z()) != std::fabs(mainPartition->position().z()))
-//				throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0 ETA partitions in a single layer have the same Z position. This module cannot be used.";
-//		}
-//	}
+	for(const auto& chamber : geometry->chambers() ){
+		if(chamber->nLayers() != int(nLayers))
+			throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0Chambers have the same number of layers. This module cannot be used.";
+		for(unsigned int iL = 0; iL < nLayers; ++iL){
+			if(chamber->layers()[iL]->nEtaPartitions() != mainLayer->nEtaPartitions())
+				throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0Layers have the same number of partitions. This module cannot be used.";
+			if(chamber->layers()[iL]->etaPartitions()[0]->specs()->parameters() != mainPartition->specs()->parameters())
+				throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0 ETA partitions have the same properties. This module cannot be used.";
+			if(std::fabs(chamber->layers()[iL]->etaPartitions()[0]->position().z()) != std::fabs(mainChamber->layers()[iL]->etaPartitions()[0]->position().z()))
+				throw cms::Exception("Setup") << "ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry() - Not all ME0 ETA partitions in a single layer have the same Z position. This module cannot be used.";
+		}
+	}
 
 	//Calculate radius to center of partition
 	middleDistanceFromBeam = mainTopo->radius();
@@ -96,8 +96,7 @@ ME0NewGeoDigiProducer::TemporaryGeometry::TemporaryGeometry(const ME0Geometry* g
 		tofs[iL].resize(numberOfPartitions);
 		for(unsigned int iP = 0; iP < numberOfPartitions; ++iP){
 			const LocalPoint partCenter(0., getPartCenter(iP), 0.);
-//			const GlobalPoint centralGP(mainChamber->layer(iL)->etaPartition(0)->toGlobal(partCenter));
-			const GlobalPoint centralGP(mainChamber->etaPartitions()[iL]->toGlobal(partCenter));
+			const GlobalPoint centralGP(mainChamber->layers()[iL]->etaPartitions()[0]->toGlobal(partCenter));
 			tofs[iL][iP] = (centralGP.mag() / 29.9792); //speed of light [cm/ns]
 			LogDebug("ME0NewGeoDigiProducer::TemporaryGeometry") << "["<<iL<<"]["<<iP<<"]="<< tofs[iL][iP] <<" "<<std::endl;
 		}

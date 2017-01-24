@@ -367,7 +367,7 @@ ME0GeometryBuilderFromDDD10EtaPart::boundPlane(const DDFilteredView& fv,
   Basic3DVector<float> newY(0.,0.,1.);
   Basic3DVector<float> newZ(0.,1.,0.);
   // Odd chambers are inverted in gem.xml
-  if (isOddChamber) newY *= -1;
+  // if (isOddChamber) newY *= -1;
 
   rotResult.rotateAxes(newX, newY, newZ);
 

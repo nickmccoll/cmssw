@@ -379,16 +379,16 @@ muonDict = {
             'Geometry/MuonCommonData/data/PhaseII/TDR_BaseLine/me0.xml',
         ],
         2 : [
-            'Geometry/MuonCommonData/data/PhaseII/muonNumbering.xml',
+            'Geometry/MuonCommonData/data/PhaseII/TDR_BaseLine/muonNumbering.xml',
         ],
         3 : [
-            'Geometry/MuonSimData/data/PhaseII/muonSens.xml',
+            'Geometry/MuonSimData/data/PhaseII/ME0EtaPart/muonSens.xml',
             'Geometry/DTGeometryBuilder/data/dtSpecsFilter.xml',
             'Geometry/CSCGeometryBuilder/data/cscSpecsFilter.xml',
             'Geometry/CSCGeometryBuilder/data/cscSpecs.xml',
             'Geometry/RPCGeometryBuilder/data/PhaseII/RPCSpecs.xml',
-            'Geometry/GEMGeometryBuilder/data/GEMSpecsFilter.xml',
-            'Geometry/GEMGeometryBuilder/data/v5/GEMSpecs.xml',
+            'Geometry/GEMGeometryBuilder/data/v7/GEMSpecsFilter.xml',
+            'Geometry/GEMGeometryBuilder/data/v7/GEMSpecs.xml',
         ],
         4 : [
             'Geometry/MuonSimData/data/PhaseII/muonProdCuts.xml',

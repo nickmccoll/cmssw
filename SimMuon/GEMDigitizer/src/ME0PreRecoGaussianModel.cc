@@ -18,23 +18,23 @@
 const int bxwidth   = 25;         // [ns]
 
 ME0PreRecoGaussianModel::ME0PreRecoGaussianModel(const edm::ParameterSet& config) :
-  ME0DigiPreRecoModel(config), 
-  sigma_t(config.getParameter<double>("timeResolution")), 
-  sigma_u(config.getParameter<double>("phiResolution")), 
-  sigma_v(config.getParameter<double>("etaResolution")), 
-  error_u(config.getParameter<double>("phiError")), 
-  error_v(config.getParameter<double>("etaError")), 
+  ME0DigiPreRecoModel(config),
+  sigma_t(config.getParameter<double>("timeResolution")),
+  sigma_u(config.getParameter<double>("phiResolution")),
+  sigma_v(config.getParameter<double>("etaResolution")),
+  error_u(config.getParameter<double>("phiError")),
+  error_v(config.getParameter<double>("etaError")),
   gaussianSmearing_(config.getParameter<bool>("gaussianSmearing")),
   constPhiSmearing_(config.getParameter<bool>("constantPhiSpatialResolution")),
-  corr(config.getParameter<bool>("useCorrelation")), 
-  etaproj(config.getParameter<bool>("useEtaProjectiveGEO")), 
-  digitizeOnlyMuons_(config.getParameter<bool>("digitizeOnlyMuons")), 
-  averageEfficiency_(config.getParameter<double>("averageEfficiency")), 
+  corr(config.getParameter<bool>("useCorrelation")),
+  etaproj(config.getParameter<bool>("useEtaProjectiveGEO")),
+  digitizeOnlyMuons_(config.getParameter<bool>("digitizeOnlyMuons")),
+  averageEfficiency_(config.getParameter<double>("averageEfficiency")),
   // simulateIntrinsicNoise_(config.getParameter<bool>("simulateIntrinsicNoise")),
-  // averageNoiseRate_(config.getParameter<double>("averageNoiseRate")), 
-  simulateElectronBkg_(config.getParameter<bool>("simulateElectronBkg")), 
-  simulateNeutralBkg_(config.getParameter<bool>("simulateNeutralBkg")), 
-  minBunch_(config.getParameter<int>("minBunch")), 
+  // averageNoiseRate_(config.getParameter<double>("averageNoiseRate")),
+  simulateElectronBkg_(config.getParameter<bool>("simulateElectronBkg")),
+  simulateNeutralBkg_(config.getParameter<bool>("simulateNeutralBkg")),
+  minBunch_(config.getParameter<int>("minBunch")),
   maxBunch_(config.getParameter<int>("maxBunch")),
   instLumi_(config.getParameter<double>("instLumi"))
 {
@@ -130,7 +130,7 @@ void ME0PreRecoGaussianModel::simulateNoise(const ME0EtaPartition* roll, CLHEP::
 
   for(int hx=0; hx<heightbins; ++hx) {
     double bottomIt = bottomLength +  hx  *2*tan(10./180*3.14)*heightIt;
-    double topIt    = bottomLength + (hx+1)*2*tan(10./180*3.14)*heightIt; 
+    double topIt    = bottomLength + (hx+1)*2*tan(10./180*3.14)*heightIt;
     if(hx==heightbins-1) {
       topIt = topLength; // last bin ... make strip a bit larger to cover entire roll
       heightIt = height-hx*heightIt;
@@ -157,35 +157,35 @@ void ME0PreRecoGaussianModel::simulateNoise(const ME0EtaPartition* roll, CLHEP::
     // if (simulateIntrinsicNoise_)
     // {
     // }
-    
-    // 2) Background Noise 
+
+    // 2) Background Noise
     // ----------------------------
-    
+
     // 2a) electron background
     // -----------------------
     if (simulateElectronBkg_) {
-      // Extract / Calculate the Average Electron Rate 
+      // Extract / Calculate the Average Electron Rate
       // for the given global Y coord from Parametrization
       double averageElectronRatePerRoll = 0.0;
       double yy_helper = 1.0;
       for(int j=0; j<7; ++j) { averageElectronRatePerRoll += eleBkg[j]*yy_helper; yy_helper *= yy_glob; }
 
-      // Scale up/down for desired instantaneous lumi (reference is 5E34, double from config is in units of 1E34)      
+      // Scale up/down for desired instantaneous lumi (reference is 5E34, double from config is in units of 1E34)
       averageElectronRatePerRoll *= instLumi_*1.0/5;
 
       // Rate [Hz/cm^2] * Nbx * 25*10^-9 [s] * Area [cm] = # hits in this roll in this bx
-      const double averageElecRate(averageElectronRatePerRoll * (maxBunch_-minBunch_+1)*(bxwidth*1.0e-9) * areaIt); 
-      
+      const double averageElecRate(averageElectronRatePerRoll * (maxBunch_-minBunch_+1)*(bxwidth*1.0e-9) * areaIt);
+
       edm::LogVerbatim("ME0PreRecoGaussianModelNoise") << "[ME0PreRecoDigi :: elebkg]["<<roll->id().rawId()<<"]" /* "] :: BX = "<<std::showpos<<bx*/
 						       << " evaluation of Background Hit Rate at this coord :: "<<std::setw(12)<<averageElectronRatePerRoll<<" [Hz/cm^2]"
-						       << " x 9 x 25*10^-9 [s] x Area (of strip = "<<std::setw(12)<<areaIt<<" [cm^2]) ==> "<<std::setw(12)<<averageElecRate<<" [hits]"; 
+						       << " x 9 x 25*10^-9 [s] x Area (of strip = "<<std::setw(12)<<areaIt<<" [cm^2]) ==> "<<std::setw(12)<<averageElecRate<<" [hits]";
 
-      bool ele_eff = (CLHEP::RandFlat::shoot(engine)<averageElecRate)?1:0;      
+      bool ele_eff = (CLHEP::RandFlat::shoot(engine)<averageElecRate)?1:0;
 
       edm::LogVerbatim("ME0PreRecoGaussianModelNoise") << "[ME0PreRecoDigi :: elebkg]["<<roll->id().rawId()<<"] :: myRandY = "<<std::setw(12)<<myRandY<<" => local y = "<<std::setw(12)<<yy_rand<<" [cm]"
 						       <<" => global y (global R) = "<<std::setw(12)<<yy_glob<<" [cm] || Probability = "<<std::setw(12)<<averageElecRate
 						       <<" => efficient? "<<ele_eff<<std::endl;
-      
+
       if(ele_eff) {
 	//calculate xx_rand at a given yy_rand
 	double myRandX = CLHEP::RandFlat::shoot(engine);
@@ -210,28 +210,28 @@ void ME0PreRecoGaussianModel::simulateNoise(const ME0EtaPartition* roll, CLHEP::
 	digi_.insert(digi);
 	edm::LogVerbatim("ME0PreRecoGaussianModelNoise") << "[ME0PreRecoDigi :: elebkg]["<<roll->id().rawId()<<"] =====> electron hit in "<<roll->id()<<" pdgid = "<<pdgid<<" bx = "<<bx
 							 <<" ==> digitized"
-							 <<" at loc x = "<<xx_rand<<" loc y = "<<yy_rand<<" time = "<<time<<" [ns]"; 
+							 <<" at loc x = "<<xx_rand<<" loc y = "<<yy_rand<<" time = "<<time<<" [ns]";
       }
     } // end if electron bkg
 
     // 2b) neutral (n+g) background
     // ----------------------------
     if (simulateNeutralBkg_) {
-      // Extract / Calculate the Average Neutral Rate 
+      // Extract / Calculate the Average Neutral Rate
       // for the given global Y coord from Parametrization
       double averageNeutralRatePerRoll = 0.0;
       double yy_helper = 1.0;
       for(int j=0; j<7; ++j) { averageNeutralRatePerRoll += neuBkg[j]*yy_helper; yy_helper *= yy_glob; }
 
-      // Scale up/down for desired instantaneous lumi (reference is 5E34, double from config is in units of 1E34)      
+      // Scale up/down for desired instantaneous lumi (reference is 5E34, double from config is in units of 1E34)
       averageNeutralRatePerRoll *= instLumi_*1.0/5;
-      
+
       // Rate [Hz/cm^2] * Nbx * 25*10^-9 [s] * Area [cm] = # hits in this roll
       const double averageNeutrRate(averageNeutralRatePerRoll * (maxBunch_-minBunch_+1)*(bxwidth*1.0e-9) * areaIt);
 
       edm::LogVerbatim("ME0PreRecoGaussianModelNoise") << "[ME0PreRecoDigi :: neubkg]["<<roll->id().rawId()<<"]" /* "] :: BX = "<<std::showpos<<bx*/
 						       << " evaluation of Background Hit Rate at this coord :: "<<std::setw(12)<<averageNeutralRatePerRoll<<" [Hz/cm^2]"
-						       << " x 9 x 25*10^-9 [s] x Area (of strip = "<<std::setw(12)<<areaIt<<" [cm^2]) ==> "<<std::setw(12)<<averageNeutrRate<<" [hits]"; 
+						       << " x 9 x 25*10^-9 [s] x Area (of strip = "<<std::setw(12)<<areaIt<<" [cm^2]) ==> "<<std::setw(12)<<averageNeutrRate<<" [hits]";
 
       bool neu_eff = (CLHEP::RandFlat::shoot(engine)<averageNeutrRate)?1:0;
 
@@ -263,9 +263,9 @@ void ME0PreRecoGaussianModel::simulateNoise(const ME0EtaPartition* roll, CLHEP::
 	digi_.insert(digi);
 	edm::LogVerbatim("ME0PreRecoGaussianModelNoise") << "[ME0PreRecoDigi :: neubkg]["<<roll->id().rawId()<<"] ======> neutral hit in "<<roll->id()<<" pdgid = "<<pdgid<<" bx = "<<bx
 							 <<" ==> digitized"
-							 <<" at loc x = "<<xx_rand<<" loc y = "<<yy_rand<<" time = "<<time<<" [ns]"; 
+							 <<" at loc x = "<<xx_rand<<" loc y = "<<yy_rand<<" time = "<<time<<" [ns]";
       }
-      
+
     } // end if neutral bkg
   } // end loop over strips (= pseudo rolls)
 }

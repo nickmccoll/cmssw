@@ -31,10 +31,10 @@ public:
   }
 };
 
-ME0Segment::ME0Segment(const std::vector<const ME0RecHit*>& proto_segment, const LocalPoint& origin, 
-	   const LocalVector& direction, const AlgebraicSymMatrix& errors, double chi2) : 
+ME0Segment::ME0Segment(const std::vector<const ME0RecHit*>& proto_segment, const LocalPoint& origin,
+	   const LocalVector& direction, const AlgebraicSymMatrix& errors, double chi2) :
   RecSegment(buildDetId(proto_segment.front()->me0Id())),
-  theOrigin(origin), 
+  theOrigin(origin),
   theLocalDirection(direction), theCovMatrix(errors), theChi2(chi2){
   theTimeValue = 0.0;
   theTimeUncrt = 0.0;
@@ -42,10 +42,10 @@ ME0Segment::ME0Segment(const std::vector<const ME0RecHit*>& proto_segment, const
     theME0RecHits.push_back(*proto_segment[i]);
 }
 
-ME0Segment::ME0Segment(const std::vector<const ME0RecHit*>& proto_segment, const LocalPoint& origin, 
-	   const LocalVector& direction, const AlgebraicSymMatrix& errors, double chi2, double time, double timeErr) : 
+ME0Segment::ME0Segment(const std::vector<const ME0RecHit*>& proto_segment, const LocalPoint& origin,
+	   const LocalVector& direction, const AlgebraicSymMatrix& errors, double chi2, double time, double timeErr) :
   RecSegment(buildDetId(proto_segment.front()->me0Id())),
-  theOrigin(origin), 
+  theOrigin(origin),
   theLocalDirection(direction), theCovMatrix(errors), theChi2(chi2){
   theTimeValue = time;
   theTimeUncrt = timeErr;
@@ -65,7 +65,7 @@ std::vector<const TrackingRecHit*> ME0Segment::recHits() const{
 }
 
 std::vector<TrackingRecHit*> ME0Segment::recHits() {
-  
+
   std::vector<TrackingRecHit*> pointersOfRecHits;
   for (std::vector<ME0RecHit>::iterator irh = theME0RecHits.begin(); irh!=theME0RecHits.end(); ++irh) {
     pointersOfRecHits.push_back(&(*irh));
@@ -78,20 +78,20 @@ LocalError ME0Segment::localPositionError() const {
 }
 
 LocalError ME0Segment::localDirectionError() const {
-  return LocalError(theCovMatrix[0][0], theCovMatrix[0][1], theCovMatrix[1][1]); 
+  return LocalError(theCovMatrix[0][0], theCovMatrix[0][1], theCovMatrix[1][1]);
 }
 
 
 AlgebraicVector ME0Segment::parameters() const {
   // For consistency with DT and CSC  and what we require for the TrackingRecHit interface,
   // the order of the parameters in the returned vector should be (dx/dz, dy/dz, x, z)
-  
+
   AlgebraicVector result(4);
 
   if(theLocalDirection.z() != 0)
   {
   result[0] = theLocalDirection.x()/theLocalDirection.z();
-  result[1] = theLocalDirection.y()/theLocalDirection.z();    
+  result[1] = theLocalDirection.y()/theLocalDirection.z();
   }
   result[2] = theOrigin.x();
   result[3] = theOrigin.y();
@@ -111,16 +111,16 @@ void ME0Segment::print() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const ME0Segment& seg) {
-  os << "ME0Segment: local pos = " << seg.localPosition() << 
+  os << "ME0Segment: local pos = " << seg.localPosition() <<
     " posErr = (" << sqrt(seg.localPositionError().xx())<<","<<sqrt(seg.localPositionError().yy())<<
     "0,)\n"<<
     "            dir = " << seg.localDirection() <<
     " dirErr = (" << sqrt(seg.localDirectionError().xx())<<","<<sqrt(seg.localDirectionError().yy())<<
     "0,)\n"<<
-    "            chi2/ndf = " << ((seg.degreesOfFreedom() != 0.) ? seg.chi2()/double(seg.degreesOfFreedom()) :0 ) << 
+    "            chi2/ndf = " << ((seg.degreesOfFreedom() != 0.) ? seg.chi2()/double(seg.degreesOfFreedom()) :0 ) <<
     " #rechits = " << seg.specificRecHits().size()<<
     " time = "<< seg.time() << " +/- " << seg.timeErr() << " ns ";
 
-  return os;  
+  return os;
 }
 

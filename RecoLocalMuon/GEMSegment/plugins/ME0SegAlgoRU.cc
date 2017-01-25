@@ -313,7 +313,7 @@ std::vector<ME0Segment> ME0SegAlgoRU::buildSegments(const EnsembleHitContainer& 
 	double globalZpos    = ( ch->toGlobal( sfit_->intercept() ) ).z();
 	double globalZdir    = ( ch->toGlobal( sfit_->localdir()  ) ).z();
 	double directionSign = globalZpos * globalZdir;
-	LocalVector localDir = (directionSign * localDir ).unit();
+	LocalVector localDir = (directionSign * sfit_->localdir() ).unit();
 
 
 	ME0Segment temp(proto_segment, sfit_->intercept(),

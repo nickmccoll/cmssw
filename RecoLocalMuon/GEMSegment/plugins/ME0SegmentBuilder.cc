@@ -32,74 +32,101 @@ void ME0SegmentBuilder::build(const ME0RecHitCollection* recHits, ME0SegmentColl
 
   LogDebug("ME0SegmentBuilder")<< "Total number of rechits in this event: " << recHits->size();
 
-  // Let's define the ensemble of ME0 devices having the same region, chambers number (phi), and eta partition
-  // and layer run from 1 to number of layer. This is not the definition of one chamber... and indeed segments
-  // could in principle run in different way... The concept of the DetLayer would be more appropriate...
 
-  std::map<uint32_t, std::vector<ME0RecHit*> > ensembleRH;
+  std::map<ME0DetId, bool> foundChambers;
+  for(ME0RecHitCollection::const_iterator it = recHits->begin(); it != recHits->end(); it++) {
+	  const auto chId = it->me0Id().chamberId();
+	  auto chIt = foundChambers.find(chId);
+	  if(chIt !=  foundChambers.end()) continue;
+	  foundChambers[chId] = true;
+      ME0SegmentAlgorithmBase::HitAndPositionContainer hitAndPositions;
+      const ME0Chamber* chamber = geom_->chamber(chId);
+	  for(ME0RecHitCollection::const_iterator it2 = it; it2 != recHits->end(); it2++) {
+		  if(it2->me0Id().chamberId() != chId) continue;
 
-  // Loop on the ME0 rechit and select the different ME0 Ensemble
-  for(ME0RecHitCollection::const_iterator it2 = recHits->begin(); it2 != recHits->end(); ++it2) {
-    // ME0 Ensemble is defined by assigning all the ME0DetIds of the same "superchamber"
-    // (i.e. region same, chamber same) to the DetId of the first layer
-    // At this point there is only one roll, so nothing to be worried about ...
-    // [At a later stage one will have to mask also the rolls
-    // if one wants to recover segments that are at the border of a roll]
-    ME0DetId id(it2->me0Id().region(),1,it2->me0Id().chamber(),it2->me0Id().roll());
-    // save current ME0RecHit in vector associated to the reference id
-    ensembleRH[id.rawId()].push_back(it2->clone());
-    // cover the case in which a muon passes through etapartition N for layers 1 .. X
-    // and through eta partition N-1 for layers X+1 .. NLAYERS
-    // therefore check whether Layer > 1 and EtaPart < MAX
-    // and put the rechit also in the ensembleRH for the EtaPart+1
-    if(it2->me0Id().layer()>1 && it2->me0Id().roll()<ME0DetId::maxRollId) {
-      ME0DetId id2(it2->me0Id().region(),1,it2->me0Id().chamber(),it2->me0Id().roll()+1);
-      ensembleRH[id2.rawId()].push_back(it2->clone());
-    }
+          const auto*  part = geom_->etaPartition(it2->me0Id());
+          GlobalPoint glb = part->toGlobal(it2->localPosition());
+          LocalPoint nLoc = chamber->toLocal(glb);
+          hitAndPositions.emplace_back(&(*it2),nLoc,glb,hitAndPositions.size());
+//          std::cout <<it2->me0Id()<< " ("<<it2->localPosition().x() <<" "<< it2->localPosition().y() <<" "<< it2->localPosition().z() <<") ("
+//        		  << "("<<glb.x() <<" "<< glb.y() <<" "<<glb.z() <<" "<< glb.perp()<<") ("
+//				  << "("<<nLoc.x() <<" "<< nLoc.y() <<" "<<nLoc.z() <<")"<<std::endl;
+	  }
+
+      LogDebug("ME0Segment|ME0") << "found " << hitAndPositions.size() << " rechits in chamber " << *chIt;
+      //sort by layer
+        auto getLayer =[&](int iL) ->const ME0Layer* { //function is broken in the geo currently
+      	  for (auto layer : chamber->layers()){
+      		  if (layer->id().layer()==iL)
+      			  return layer;
+      	  }
+      	  return 0;
+        };
+        float z1 = getLayer(1)->position().z();
+        float z6 = getLayer(6)->position().z();
+        if(z1 < z6)
+        	std::sort(hitAndPositions.begin(), hitAndPositions.end(), [](const ME0SegmentAlgorithmBase::HitAndPosition& h1,const ME0SegmentAlgorithmBase::HitAndPosition& h2 ) {return h1.layer < h2.layer;});
+        else
+        	std::sort(hitAndPositions.begin(), hitAndPositions.end(), [](const ME0SegmentAlgorithmBase::HitAndPosition& h1,const ME0SegmentAlgorithmBase::HitAndPosition& h2 ) {return h1.layer < h2.layer;} );
+
+
+
+      //      std::sort(hitAndPositions.begin(), hitAndPositions.end(), [](const hitAndPosition& h1,const hitAndPosition& h2 ) )
+      // given the chamber select the appropriate algo... and run it
+      std::vector<ME0Segment> segv = algo->run(chamber, hitAndPositions);
+
+      LogDebug("ME0Segment|ME0") << "found " << segv.size() << " segments in chamber " << *chIt;
+
+      // Add the segments to master collection
+      if(segv.size())
+      oc.put(chId, segv.begin(), segv.end());
+
   }
 
-  std::map<uint32_t, std::vector<ME0Segment> > ensembleSeg;  // collect here all segments from each reference first layer roll
 
-  for(auto enIt=ensembleRH.begin(); enIt != ensembleRH.end(); ++enIt) {
-
-    std::vector<const ME0RecHit*> me0RecHits;
-    std::map<uint32_t,const ME0EtaPartition* > ens;
-
-    // all detIds have been assigned to the to chamber
-    const ME0Chamber* chamber = geom_->chamber(enIt->first);
-    for(auto rechit = enIt->second.begin(); rechit != enIt->second.end(); ++rechit) {
-      me0RecHits.push_back(*rechit);
-      ens[(*rechit)->me0Id()]=geom_->etaPartition((*rechit)->me0Id());
-    }
-    ME0SegmentAlgorithmBase::ME0Ensemble ensemble(std::pair<const ME0Chamber*, std::map<uint32_t,const ME0EtaPartition*> >(chamber,ens));
-
-    ME0DetId mid(enIt->first);
-    #ifdef EDM_ML_DEBUG
-    LogDebug("ME0SegmentBuilder") << "found " << me0RecHits.size() << " rechits in etapart " << mid;
-    #endif
-
-    // given the chamber select the appropriate algo... and run it
-    std::vector<ME0Segment> segv = algo->run(ensemble, me0RecHits);
-
-    #ifdef EDM_ML_DEBUG
-    LogDebug("ME0SegmentBuilder") << "found " << segv.size() << " segments in etapart " << mid;
-    #endif
-
-    // Add the segments to master collection
-    // oc.put(mid, segv.begin(), segv.end());
-
-    // Add the segments to the chamber segment collection
-    // segment is defined from first partition of first layer
-    ME0DetId midch = mid.chamberId();
-    ensembleSeg[midch.rawId()].insert(ensembleSeg[midch.rawId()].end(), segv.begin(), segv.end());
-  }
-
-  for(auto segIt=ensembleSeg.begin(); segIt != ensembleSeg.end(); ++segIt) {
-    // Add the segments to master collection
-    ME0DetId midch(segIt->first);
-    std::cout <<" Writing Segment in "<<midch<<std::endl;
-    oc.put(midch, segIt->second.begin(), segIt->second.end());
-  }
+//  for(ME0RecHitCollection::const_iterator it2 = recHits->begin(); it2 != recHits->end(); it2++) {
+//	  std:: cout <<"!!"<< (*it2).me0Id() <<" "<< (*it2).me0Id().chamberId() <<" "<< (*it2).me0Id().chamberId().rawId() << std::endl;
+//      bool insert = true;
+//      for(chIt=chambers.begin(); chIt != chambers.end(); ++chIt)
+//          if ((*it2).me0Id().chamberId() == (*chIt)) insert = false;
+//      if (insert){
+//          chambers.push_back((*it2).me0Id().chamberId());
+//          std:: cout <<"YEP"<< std::endl;
+//      }
+//  }
+//
+//
+//  for(chIt=chambers.begin(); chIt != chambers.end(); ++chIt) {
+//      const ME0Chamber* chamber = geom_->chamber(*chIt);
+//      ME0RecHitCollection::range range = recHits->get(std::make_pair(*chIt, ME0DetIdSameChamberComparator()));
+//      std::vector<const ME0RecHit*> me0RecHits;
+//      //Do coordinate transformations once, store global position and local position in
+//      //chamber ref frame for each rechit
+//      ME0SegmentAlgorithmBase::HitAndPositionContainer hitAndPositions;
+//      hitAndPositions.reserve(range.second - range.first);
+//      std::cout << "TRY "<<ME0DetId(*chIt)<<" "<<ME0DetId(*chIt).chamberId()<<std::endl;
+//
+//
+//      for(ME0RecHitCollection::const_iterator rechit = range.first; rechit != range.second; rechit++) {
+//          const auto*  part = geom_->etaPartition(rechit->me0Id());
+//          GlobalPoint glb = part->toGlobal(rechit->localPosition());
+//          LocalPoint nLoc = chamber->toLocal(glb);
+//          hitAndPositions.emplace_back(&(*rechit),nLoc,glb,hitAndPositions.size());
+//          std::cout <<rechit->me0Id()<< " ("<<rechit->localPosition().x() <<" "<< rechit->localPosition().y() <<" "<< rechit->localPosition().z() <<") ("
+//        		  << "("<<glb.x() <<" "<< glb.y() <<" "<<glb.z() <<" "<< glb.perp()<<") ("
+//				  << "("<<nLoc.x() <<" "<< nLoc.y() <<" "<<nLoc.z() <<")"<<std::endl;
+//      }
+//
+//      LogDebug("ME0Segment|ME0") << "found " << me0RecHits.size() << " rechits in chamber " << *chIt;
+//
+//      // given the chamber select the appropriate algo... and run it
+//      std::vector<ME0Segment> segv = algo->run(chamber, hitAndPositions);
+//
+//      LogDebug("ME0Segment|ME0") << "found " << segv.size() << " segments in chamber " << *chIt;
+//
+//      // Add the segments to master collection
+//      oc.put((*chIt), segv.begin(), segv.end());
+//  }
 }
 
 void ME0SegmentBuilder::setGeometry(const ME0Geometry* geom) {

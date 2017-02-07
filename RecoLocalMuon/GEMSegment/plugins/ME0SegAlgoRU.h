@@ -29,9 +29,6 @@
 #include <vector>
 
 class MuonSegFit;
-
-
-
 class ME0SegAlgoRU : public ME0SegmentAlgorithmBase {
 
 public:
@@ -112,81 +109,6 @@ private:
 
     //Objects used to produce the segments
     const ME0Chamber *theChamber;
-
-
-
-
-//    std::vector<ME0Segment> buildSegments();
-
-    // Could be static at the moment, but in principle one
-    // might like ME0Segmentizer-specific behaviour?
-//    bool areHitsCloseInEta(const ME0RecHit* h1, const ME0RecHit* h2) const;
-//    bool areHitsCloseInGlobalPhi(const ME0RecHit* h1, const ME0RecHit* h2) const;
-//    bool isHitNearSegment(const ME0RecHit* h) const;
-
-    /**
-     * Try adding non-used hits to segment
-     */
-//    void tryAddingHitsToSegment(const EnsembleHitContainer& rechitsInChamber,
-//	const BoolContainer& used, const LayerIndex& layerIndex,
-//        const EnsembleHitContainerCIt i1, const EnsembleHitContainerCIt i2);
-//
-
-
-    /**
-     * Return true if segment is 'good'.
-     * In this algorithm, 'good' means has sufficient hits
-     */
-//    bool isSegmentGood(const EnsembleHitContainer& rechitsInChamber) const;
-
-    /**
-     * Flag hits on segment as used
-     */
-//    void flagHitsAsUsed(const EnsembleHitContainer& rechitsInChamber, BoolContainer& used) const;
-	
-    /// Utility functions 	
-//    bool addHit(const ME0RecHit* hit, int layer);
-//    void updateParameters(void);
-//    float fit_r_phi(SVector6 points, int layer) const;
-//    float fitX(SVector6 points, SVector6 errors, int ir, int ir2, float &chi2_str) const;
-//    void baseline(int n_seg_min);//function for arasing bad hits in case of bad chi2/NDOF
-   /**
-     * Always enforce direction of segment to point from IP outwards
-     * (Incorrect for particles not coming from IP, of course.)
-     */
-//    float phiAtZ(float z) const;
-//    bool hasHitOnLayer(int layer) const;
-//    bool replaceHit(const ME0RecHit* h, int layer);
-//    void compareProtoSegment(const ME0RecHit* h, int layer);
-//    void increaseProtoSegment(const ME0RecHit* h, int layer, int chi2_factor);
-
-
-
-
-
-
-
-
-
-//    float windowScale;
-//    bool doCollisions;
-//    float dRMax ;
-//    float dPhiMax;
-//    float dRIntMax;
-//    float dPhiIntMax;
-//    float chi2Max;
-//    float chi2_str_;
-//    float chi2Norm_2D_;
-//    float wideSeg;
 };
 
-// functor to sort rechits in the segment
-//struct  sortByLayer{
-//  sortByLayer(){}
-//  bool operator()(const ME0RecHit* a, const ME0RecHit* b) const{
-//    int layer1 = a->me0Id().layer();
-//    int layer2 = b->me0Id().layer();
-//    return  layer1 < layer2;
-//  }
-//};
 #endif

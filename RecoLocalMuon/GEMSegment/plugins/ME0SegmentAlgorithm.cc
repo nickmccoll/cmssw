@@ -1,4 +1,4 @@
-\/**
+/**
  * \file ME0SegmentAlgorithm.cc
  *  based on CSCSegAlgoST.cc
  *

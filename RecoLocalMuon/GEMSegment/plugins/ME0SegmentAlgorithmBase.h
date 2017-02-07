@@ -36,13 +36,6 @@ public:
 	typedef std::vector<HitAndPosition> HitAndPositionContainer;
 	typedef std::vector<const HitAndPosition*> HitAndPositionPtrContainer;
 
-  /// Typedefs
-//  typedef std::vector<const ME0RecHit*> EnsembleHitContainer;
-//  typedef std::vector<EnsembleHitContainer> ProtoSegments;
-
-//  typedef std::pair<LocalPoint,GlobalPoint> PositionSet;
-//  typedef std::vector<PositionSet> PositionEnsemble;
-
     /// Constructor
     explicit ME0SegmentAlgorithmBase(const edm::ParameterSet&) {};
     /// Destructor

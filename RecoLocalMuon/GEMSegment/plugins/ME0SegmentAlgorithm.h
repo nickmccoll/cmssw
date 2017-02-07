@@ -27,7 +27,6 @@ class ME0SegmentAlgorithm : public ME0SegmentAlgorithmBase {
 public:
 
   /// Typedefs
-//  typedef std::vector<const ME0RecHit*> EnsembleHitContainer;
   typedef std::vector<HitAndPositionPtrContainer> ProtoSegments;
 
   /// Constructor

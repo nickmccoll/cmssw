@@ -79,8 +79,6 @@ private:
     std::unique_ptr<MuonSegFit> addHit(HitAndPositionPtrContainer& proto_segment, const HitAndPosition& aHit) const;
     //Does the segment have any hits on this layer?
     bool hasHitOnLayer(const HitAndPositionPtrContainer& proto_segment, const unsigned int layer) const;
-    //Remove any hits on the segment in this hits layer and add that one to the proto segment
-    std::unique_ptr<MuonSegFit>  replaceHit(HitAndPositionPtrContainer& proto_segment, const HitAndPosition& aHit) const;
     //Produce a new fit
     std::unique_ptr<MuonSegFit> makeFit(const HitAndPositionPtrContainer& proto_segment) const;
 

@@ -414,35 +414,43 @@ float ME0SegAlgoRU::getHitSegChi2(const std::unique_ptr<MuonSegFit>& fit, const 
 }
 
 bool ME0SegAlgoRU::hasHitOnLayer(const HitAndPositionPtrContainer& proto_segment, const unsigned int layer) const {
-  for(const auto* hit : proto_segment)
-	  if(hit->layer == layer) return true;
+  for(const auto* h : proto_segment) if(h->layer == layer) return true;
   return false;
 }
 
-std::unique_ptr<MuonSegFit> ME0SegAlgoRU::replaceHit(HitAndPositionPtrContainer& proto_segment, const HitAndPosition& aHit) const {
-  // replace a hit from a layer
-	HitAndPositionPtrContainer::const_iterator it;
-  for (auto it = proto_segment.begin(); it != proto_segment.end();) {
-    if ((*it)->layer == aHit.layer) {
-      it = proto_segment.erase(it);
-    } else {
-      ++it;
-    }
-  }
-  return addHit(proto_segment, aHit);
-}
 void ME0SegAlgoRU::compareProtoSegment(std::unique_ptr<MuonSegFit>& current_fit, HitAndPositionPtrContainer& current_proto_segment, const HitAndPosition& new_hit) const {
-	//check to see
-
-
+	const HitAndPosition * old_hit = 0;
 	HitAndPositionPtrContainer new_proto_segment = current_proto_segment;
-	replaceHit(new_proto_segment,new_hit);
-	auto new_fit = makeFit(new_proto_segment);
-//	edm::LogVerbatim("ME0SegAlgoRU") << "[ME0SegAlgoRU::compareProtoSegment] old chi2 = "<<current_fit->chi2()<<" new chi2 = "<<new_fit->chi2() <<" ==> replace: " << (new_fit->chi2() < current_fit->chi2()) <<std::endl;
-	if(new_fit->chi2() < current_fit->chi2()){
+
+	HitAndPositionPtrContainer::const_iterator it;
+	for (auto it = new_proto_segment.begin(); it != new_proto_segment.end();) {
+		if ((*it)->layer == new_hit.layer) {
+			old_hit = *it;
+			it = new_proto_segment.erase(it);
+		} else {
+			++it;
+		}
+	}
+	auto new_fit = addHit(new_proto_segment,new_hit);
+
+	//If on the same strip but different BX choose the closest
+	bool useNew = false;
+	if(old_hit->lp == new_hit.lp ){
+		float avgtof = 0;
+		for(const auto* h : current_proto_segment)
+			if(old_hit != h) avgtof += h->rh->tof();
+		avgtof /= float(current_proto_segment.size() - 1);
+		if(std::abs(avgtof - new_hit.rh->tof() ) <
+				std::abs(avgtof - old_hit->rh->tof() )
+		) useNew = true;
+	} //otherwise base it on chi2
+	else if(new_fit->chi2() < current_fit->chi2()) useNew = true;
+
+	if(useNew){
 		current_proto_segment = new_proto_segment;
 		current_fit = std::move(new_fit);
 	}
+
 }
 
 void ME0SegAlgoRU::increaseProtoSegment(const float maxChi2, std::unique_ptr<MuonSegFit>& current_fit, HitAndPositionPtrContainer& current_proto_segment, const HitAndPosition& new_hit) const {
